@@ -1,0 +1,48 @@
+name: Build Windows installer
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - run: npm run typecheck
+
+      - run: npm run smoke
+
+      - run: npm run build
+
+      - name: Empaquetar y publicar (solo en tags)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: npx electron-builder --win --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Empaquetar sin publicar (workflow_dispatch manual)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: npx electron-builder --win --publish never
+
+      - name: Subir instalador como artefacto (para probar sin publicar)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: AMS-Windows-installer
+          path: app/release/*.exe
