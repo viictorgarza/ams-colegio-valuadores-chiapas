@@ -14,6 +14,7 @@ import * as documentsModule from './modules/documents'
 import * as backupsModule from './modules/backups'
 import * as eventsModule from './modules/events'
 import * as assembliesModule from './modules/assemblies'
+import * as updatesModule from './modules/updates'
 
 // El orden importa solo para audit: se suscribe antes de que nadie emita.
 const modules = [
@@ -27,7 +28,8 @@ const modules = [
   documentsModule,
   backupsModule,
   eventsModule,
-  assembliesModule
+  assembliesModule,
+  updatesModule
 ]
 
 function createWindow(): void {

@@ -25,6 +25,7 @@
     "@types/pdfkit": "^0.17.6",
     "better-sqlite3": "^12.11.1",
     "drizzle-orm": "^0.45.2",
+    "electron-updater": "^6.8.9",
     "exceljs": "^4.4.0",
     "pdfkit": "^0.19.1",
     "react": "^19.2.7",
