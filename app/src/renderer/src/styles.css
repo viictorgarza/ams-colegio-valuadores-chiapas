@@ -1,0 +1,75 @@
+@import 'tailwindcss';
+
+/*
+ * Tokens del sistema visual (docs/04 §7): azul institucional #163EAB,
+ * neutros fríos con sesgo azul, Segoe UI. Modo claro por defecto;
+ * el modo oscuro llega después con esta misma estructura.
+ */
+@theme {
+  --color-bg: #f3f5f9;
+  --color-surface: #ffffff;
+  --color-sidebar: #eef1f6;
+  --color-inset: #f6f8fb;
+  --color-ink: #1a2130;
+  --color-ink2: #566175;
+  --color-ink3: #8a94a8;
+  --color-line: #e2e7ef;
+  --color-accent: #163eab;
+  --color-accent-hover: #102e86;
+  --color-accent-soft: #e8eefb;
+  --color-good: #1e7c3c;
+  --color-good-bg: #e7f4ea;
+  --color-warn: #96590b;
+  --color-warn-bg: #fbf1dd;
+  --color-bad: #b42323;
+  --color-bad-bg: #fbeaea;
+  --color-on-accent: #ffffff; /* texto sobre botones sólidos de acento */
+
+  --font-sans: -apple-system, 'Segoe UI', 'SF Pro Text', system-ui, sans-serif;
+}
+
+/*
+ * Modo oscuro (docs/04 §7): mismos tokens, valores distintos. Se activa con
+ * data-theme="dark" en <html>, controlado por ThemeToggle (persistido en
+ * localStorage). El acento en oscuro es #7E9BE8, ya documentado desde Fase 4.
+ */
+:root[data-theme='dark'] {
+  --color-bg: #12151c;
+  --color-surface: #1a1e28;
+  --color-sidebar: #161a22;
+  --color-inset: #20242f;
+  --color-ink: #e7ebf5;
+  --color-ink2: #a8b0c2;
+  --color-ink3: #767f93;
+  --color-line: #2b303c;
+  --color-accent: #7e9be8;
+  --color-accent-hover: #96b0ee;
+  --color-accent-soft: #232c47;
+  --color-good: #5cc584;
+  --color-good-bg: #163223;
+  --color-warn: #e0aa4f;
+  --color-warn-bg: #3a2c12;
+  --color-bad: #ea6b6b;
+  --color-bad-bg: #3a1a1a;
+  --color-on-accent: #12151c;
+}
+
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  font-size: 14px;
+}
+
+/*
+ * Transición suave entre modo claro/oscuro (Victor, 2026-07-12): al cambiar
+ * data-theme, los tokens de color cambian de valor instantáneamente, pero como
+ * casi todo consume esas variables vía background-color/border-color/color,
+ * animar esas tres propiedades hace que el cambio se sienta como un mix, no
+ * un salto. Los botones que ya traen su propio transition-colors (más
+ * específico por clase) conservan su duración de hover sin conflicto.
+ */
+*, *::before, *::after {
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}

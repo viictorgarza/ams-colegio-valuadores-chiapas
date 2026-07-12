@@ -1,0 +1,10 @@
+node_modules/
+app/out/
+app/dist/
+app/*.db
+app/*.db-*
+app/*.tsbuildinfo
+app/release/
+.claude/
+.DS_Store
+*.local

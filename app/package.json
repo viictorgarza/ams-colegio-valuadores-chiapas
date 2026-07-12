@@ -1,0 +1,50 @@
+{
+  "name": "ams",
+  "productName": "AMS",
+  "version": "0.1.0",
+  "description": "Sistema de administración de miembros — Colegio de Especialistas en Valuación Profesional de Chiapas A.C.",
+  "main": "out/main/index.js",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
+    "typecheck:web": "tsc -p tsconfig.web.json --noEmit",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "db:generate": "drizzle-kit generate",
+    "smoke": "ELECTRON_RUN_AS_NODE=1 electron node_modules/tsx/dist/cli.mjs scripts/smoke.ts",
+    "postinstall": "node scripts/native-prebuilds.mjs"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.3.0",
+    "@fortawesome/free-regular-svg-icons": "^7.3.0",
+    "@fortawesome/free-solid-svg-icons": "^7.3.0",
+    "@fortawesome/react-fontawesome": "^3.4.0",
+    "@types/pdfkit": "^0.17.6",
+    "better-sqlite3": "^12.11.1",
+    "drizzle-orm": "^0.45.2",
+    "exceljs": "^4.4.0",
+    "pdfkit": "^0.19.1",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "uuid": "^14.0.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.2.0",
+    "@tailwindcss/vite": "^4.3.2",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "drizzle-kit": "^0.31.10",
+    "electron": "^42.6.1",
+    "electron-vite": "^5.0.0",
+    "tailwindcss": "^4.3.2",
+    "tsx": "^4.23.0",
+    "typescript": "^7.0.2",
+    "vite": "^7.3.6"
+  }
+}
