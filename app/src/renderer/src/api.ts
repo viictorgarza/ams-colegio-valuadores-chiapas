@@ -77,7 +77,12 @@ export const api = {
   backups: {
     create: caller(contracts.backups.create),
     restore: caller(contracts.backups.restore),
-    getLast: caller(contracts.backups.getLast)
+    getLast: caller(contracts.backups.getLast),
+    getCloudConfig: caller(contracts.backups.getCloudConfig),
+    setCloudConfig: caller(contracts.backups.setCloudConfig),
+    testCloudConnection: caller(contracts.backups.testCloudConnection),
+    createCloudBackup: caller(contracts.backups.createCloudBackup),
+    getLastCloudBackup: caller(contracts.backups.getLastCloudBackup)
   },
   events: {
     list: caller(contracts.events.list),

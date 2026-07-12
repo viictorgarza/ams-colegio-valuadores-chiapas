@@ -18,11 +18,13 @@
     "package:win": "electron-vite build && electron-builder --win --publish never"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1085.0",
     "@fortawesome/fontawesome-svg-core": "^7.3.0",
     "@fortawesome/free-regular-svg-icons": "^7.3.0",
     "@fortawesome/free-solid-svg-icons": "^7.3.0",
     "@fortawesome/react-fontawesome": "^3.4.0",
     "@types/pdfkit": "^0.17.6",
+    "archiver": "^7.0.1",
     "better-sqlite3": "^12.11.1",
     "drizzle-orm": "^0.45.2",
     "electron-updater": "^6.8.9",
