@@ -19,6 +19,7 @@ import { EmailInput } from '@renderer/components/EmailInput'
 import { UniversityInput } from '@renderer/components/UniversityInput'
 import { CareerInput } from '@renderer/components/CareerInput'
 import { TitleSelect } from '@renderer/components/TitleSelect'
+import { useToast } from '@renderer/components/Toast'
 import { toTitleCase } from '@renderer/lib/textCase'
 import { PaymentsTab } from './PaymentsTab'
 import { DocumentsTab } from './DocumentsTab'
@@ -206,6 +207,7 @@ function InfoForm(props: { member: Detail; onSaved: (m: Detail) => void }): Reac
   const [isPerito, setIsPerito] = useState(props.member.isPerito)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
+  const notify = useToast()
 
   const set = (key: string) => (v: string) => {
     setDraft((d) => ({ ...d, [key]: v }))
@@ -257,6 +259,7 @@ function InfoForm(props: { member: Detail; onSaved: (m: Detail) => void }): Reac
       props.onSaved(updated)
       setDraft(toDraft(updated))
       setSaved(true)
+      notify('Guardado.')
     } catch (e) {
       const msg = e instanceof Error ? e.message : ''
       if (msg.includes('CURP')) setError('La CURP no tiene el formato correcto (18 caracteres).')

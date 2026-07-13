@@ -37,6 +37,8 @@ export const api = {
   users: {
     list: caller(contracts.users.list),
     create: caller(contracts.users.create),
+    update: caller(contracts.users.update),
+    resetPassword: caller(contracts.users.resetPassword),
     setActive: caller(contracts.users.setActive)
   },
   members: {
@@ -85,7 +87,6 @@ export const api = {
     updateType: caller(contracts.documents.updateType),
     setTypeActive: caller(contracts.documents.setTypeActive),
     getOcrStatus: caller(contracts.documents.getOcrStatus),
-    setOcrApiKey: caller(contracts.documents.setOcrApiKey),
     detectExpiry: caller(contracts.documents.detectExpiry)
   },
   backups: {
@@ -93,7 +94,6 @@ export const api = {
     restore: caller(contracts.backups.restore),
     getLast: caller(contracts.backups.getLast),
     getCloudConfig: caller(contracts.backups.getCloudConfig),
-    setCloudConfig: caller(contracts.backups.setCloudConfig),
     testCloudConnection: caller(contracts.backups.testCloudConnection),
     createCloudBackup: caller(contracts.backups.createCloudBackup),
     getLastCloudBackup: caller(contracts.backups.getLastCloudBackup),

@@ -13,7 +13,6 @@ export function register(): void {
   handle(contracts.backups.restore, () => service.restoreFromLocalBackup())
   handle(contracts.backups.getLast, () => service.getLastBackup())
   handle(contracts.backups.getCloudConfig, () => service.getCloudConfig())
-  handle(contracts.backups.setCloudConfig, (input) => service.setCloudConfig(input))
   handle(contracts.backups.testCloudConnection, () => service.testCloudConnection())
   handle(contracts.backups.createCloudBackup, () => service.createCloudBackup(actor()))
   handle(contracts.backups.getLastCloudBackup, () => service.getLastCloudBackup())

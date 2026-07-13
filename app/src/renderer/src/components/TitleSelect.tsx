@@ -41,7 +41,7 @@ export function TitleSelect(props: { value: string; onChange: (v: string) => voi
       }}
       className="border border-line rounded-lg px-3 py-1.5 bg-surface text-[13.5px] outline-none focus:border-accent focus:ring-2 focus:ring-accent-soft w-full"
     >
-      <option value="">— Selecciona —</option>
+      <option value="">Selecciona…</option>
       {COMMON_TITLES.map((t) => (
         <option key={t} value={t}>
           {t}

@@ -152,11 +152,6 @@ export const documentsContracts = {
   ),
   remove: contract('documents:remove', z.object({ memberDocumentId: z.string() }), memberDocumentEntrySchema),
   getOcrStatus: contract('documents:ocr-status', z.void(), z.object({ configured: z.boolean() })),
-  setOcrApiKey: contract(
-    'documents:set-ocr-api-key',
-    z.object({ apiKey: z.string().trim().min(1).nullable() }),
-    z.object({ ok: z.literal(true) })
-  ),
   detectExpiry: contract(
     'documents:detect-expiry',
     z.object({ versionId: z.string() }),

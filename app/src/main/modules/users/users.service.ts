@@ -114,6 +114,48 @@ export function createUser(input: CreateUserInput, actorId: string | null): Crea
   return { ok: true, user: toUser(db.select().from(s.users).where(eq(s.users.id, id)).get()!) }
 }
 
+export type UpdateUserInput = { fullName: string; username: string }
+export type UpdateUserResult = { ok: true; user: User } | { ok: false; reason: 'usuario_repetido' }
+
+/** Edita nombre completo y/o usuario. Si la cuenta editada es la de la sesión
+ * activa, refresca currentUser para que el saludo/menú reflejen el cambio sin
+ * requerir volver a iniciar sesión. */
+export function updateUser(id: string, input: UpdateUserInput, actorId: string | null): UpdateUserResult {
+  const db = getDb()
+  const existing = db
+    .select({ id: s.users.id })
+    .from(s.users)
+    .where(and(eq(s.users.username, input.username), ne(s.users.id, id)))
+    .get()
+  if (existing) return { ok: false, reason: 'usuario_repetido' }
+
+  db.update(s.users)
+    .set({ fullName: input.fullName, username: input.username, updatedAt: new Date().toISOString() })
+    .where(eq(s.users.id, id))
+    .run()
+  const updated = toUser(db.select().from(s.users).where(eq(s.users.id, id)).get()!)
+
+  if (currentUser?.id === id) {
+    currentUser = { ...currentUser, fullName: updated.fullName, username: updated.username }
+  }
+  bus.emit('user.updated', { actorId, userId: id, fullName: updated.fullName, username: updated.username })
+  return { ok: true, user: updated }
+}
+
+/** Restablece la contraseña de otra cuenta (admin gestionando usuarios).
+ * Marca mustChangePassword para forzar cambio en el siguiente login, igual
+ * que las cuentas recién creadas. */
+export function adminResetPassword(id: string, newPassword: string, actorId: string | null): { ok: true } {
+  const db = getDb()
+  const row = db.select({ username: s.users.username }).from(s.users).where(eq(s.users.id, id)).get()
+  db.update(s.users)
+    .set({ passwordHash: hashPassword(newPassword), mustChangePassword: true, updatedAt: new Date().toISOString() })
+    .where(eq(s.users.id, id))
+    .run()
+  bus.emit('user.password_reset', { actorId, userId: id, username: row?.username ?? '' })
+  return { ok: true }
+}
+
 export type SetUserActiveResult = { ok: true } | { ok: false; reason: 'ultimo_admin_activo' }
 
 export function setUserActive(id: string, isActive: boolean, actorId: string | null): SetUserActiveResult {

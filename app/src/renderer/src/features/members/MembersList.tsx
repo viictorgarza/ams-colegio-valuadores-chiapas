@@ -181,7 +181,7 @@ export function NewMemberModal(props: {
         </>
       }
     >
-      <div className="grid grid-cols-[90px_1fr] gap-3">
+      <div className="grid grid-cols-[112px_1fr] gap-3">
         <Field label="Título">
           <TitleSelect value={title} onChange={setTitle} />
         </Field>

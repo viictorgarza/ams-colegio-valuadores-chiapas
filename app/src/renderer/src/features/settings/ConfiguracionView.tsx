@@ -1,30 +1,35 @@
 import { useState } from 'react'
+import type { SessionUser } from '@shared/contracts'
 import { DocumentTypesView } from './DocumentTypesView'
 import { BackupsView } from './BackupsView'
-import { OcrSettingsView } from './OcrSettingsView'
 import { TrashView } from './TrashView'
 import { OrganizationSettingsView } from './OrganizationSettingsView'
 import { SecuritySettingsView } from './SecuritySettingsView'
+import { UsersSettingsView } from './UsersSettingsView'
 
-type Tab = 'organizacion' | 'tipos' | 'respaldos' | 'ocr' | 'papelera' | 'seguridad'
+type Tab = 'organizacion' | 'tipos' | 'respaldos' | 'usuarios' | 'papelera' | 'seguridad'
 
 const TABS: Array<{ key: Tab; label: string }> = [
   { key: 'organizacion', label: 'Organización' },
   { key: 'tipos', label: 'Tipos de documento' },
   { key: 'respaldos', label: 'Respaldos' },
-  { key: 'ocr', label: 'OCR' },
+  { key: 'usuarios', label: 'Usuarios' },
   { key: 'papelera', label: 'Papelera' },
   { key: 'seguridad', label: 'Seguridad' }
 ]
 
-export function ConfiguracionView(): React.JSX.Element {
+export function ConfiguracionView(props: {
+  user: SessionUser
+  onUserChanged: (u: SessionUser) => void
+}): React.JSX.Element {
   const [tab, setTab] = useState<Tab>('organizacion')
+  const tabs = TABS.filter((t) => t.key !== 'usuarios' || props.user.role === 'admin')
 
   return (
     <div>
       <div className="px-8 pt-6 max-w-6xl mx-auto w-full">
         <div className="flex gap-1 border-b border-line">
-          {TABS.map((t) => (
+          {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
@@ -42,7 +47,9 @@ export function ConfiguracionView(): React.JSX.Element {
       {tab === 'organizacion' && <OrganizationSettingsView />}
       {tab === 'tipos' && <DocumentTypesView />}
       {tab === 'respaldos' && <BackupsView />}
-      {tab === 'ocr' && <OcrSettingsView />}
+      {tab === 'usuarios' && props.user.role === 'admin' && (
+        <UsersSettingsView user={props.user} onUserChanged={props.onUserChanged} />
+      )}
       {tab === 'papelera' && <TrashView />}
       {tab === 'seguridad' && <SecuritySettingsView />}
     </div>

@@ -7,7 +7,6 @@ import { extname, join } from 'node:path'
 // se ejecuta fuera del bundle de Electron (scripts/smoke.ts con tsx), donde los alias no existen.
 import { getDb } from '../../core/db'
 import * as s from '../../core/db/schema'
-import { getSetting, setSetting } from '../../core/db/settings'
 import { bus } from '../../core/events/bus'
 import {
   CREDENTIAL_BACK_NAME,
@@ -431,16 +430,16 @@ export function getVersionData(versionId: string): { mimeType: string; dataBase6
 // Autorizado por Victor 2026-07-12 (aviso de privacidad ya cubre el envío de
 // documentos a terceros). Best-effort: solo funciona con internet, igual que
 // la búsqueda de CP; si falla, se captura la fecha a mano como siempre.
+// Configuración inherente del sistema (decisión de Victor, 2026-07-13): la
+// API key ya no se captura desde la UI, se lee de una variable de entorno
+// por instalación. Ver docs/05 o el README para la variable exacta.
 
-const OCR_API_KEY_SETTING = 'google_vision_api_key'
-
-export function isOcrConfigured(): boolean {
-  return !!getSetting<string | null>(OCR_API_KEY_SETTING, null)
+function ocrApiKey(): string | null {
+  return process.env['AMS_OCR_API_KEY'] ?? null
 }
 
-export function setOcrApiKey(apiKey: string | null, actorId: string | null): void {
-  setSetting(OCR_API_KEY_SETTING, apiKey)
-  bus.emit('ocr.api_key_changed', { actorId, configured: !!apiKey })
+export function isOcrConfigured(): boolean {
+  return !!ocrApiKey()
 }
 
 const MONTHS_ES: Record<string, string> = {
@@ -502,9 +501,9 @@ export function extractDateFromText(text: string): string | null {
 export async function detectExpiry(
   versionId: string
 ): Promise<{ ok: boolean; candidateDate: string | null; rawTextPreview: string | null; error: string | null }> {
-  const apiKey = getSetting<string | null>(OCR_API_KEY_SETTING, null)
+  const apiKey = ocrApiKey()
   if (!apiKey) {
-    return { ok: false, candidateDate: null, rawTextPreview: null, error: 'No hay una API key de Google Cloud Vision configurada (Configuración → OCR).' }
+    return { ok: false, candidateDate: null, rawTextPreview: null, error: 'La detección por IA no está configurada en esta instalación.' }
   }
 
   const { path, mimeType } = versionFile(versionId)

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { faLock } from '@fortawesome/free-solid-svg-icons'
 import { api } from '@renderer/api'
 import { Button, Field, TextInput } from '@renderer/components/ui'
+import { useToast } from '@renderer/components/Toast'
 
 /** Configuración → Seguridad (M4/E-08): auto-bloqueo por inactividad —
  * cierra la sesión sola tras N minutos sin actividad (mouse/teclado).
@@ -9,7 +10,7 @@ import { Button, Field, TextInput } from '@renderer/components/ui'
 export function SecuritySettingsView(): React.JSX.Element {
   const [minutes, setMinutes] = useState('')
   const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState<string | null>(null)
+  const notify = useToast()
 
   function reload(): void {
     void api.system.getAutoLockMinutes().then((m) => setMinutes(String(m)))
@@ -20,10 +21,9 @@ export function SecuritySettingsView(): React.JSX.Element {
     const parsed = parseInt(minutes, 10)
     if (Number.isNaN(parsed) || parsed < 0 || parsed > 240) return
     setBusy(true)
-    setMessage(null)
     try {
       await api.system.setAutoLockMinutes({ minutes: parsed })
-      setMessage('Guardado. El cambio aplica de inmediato, sin reiniciar la app.')
+      notify('Guardado. El cambio aplica de inmediato.')
     } finally {
       setBusy(false)
     }
@@ -47,7 +47,6 @@ export function SecuritySettingsView(): React.JSX.Element {
         <Field label="Minutos de inactividad">
           <TextInput type="number" value={minutes} onChange={setMinutes} className="max-w-[120px]" />
         </Field>
-        {message && <p className="text-[13px] text-good bg-good-bg rounded-lg px-3 py-2">{message}</p>}
         <div>
           <Button variant="primary" icon={faLock} disabled={busy} onClick={() => void save()}>
             Guardar

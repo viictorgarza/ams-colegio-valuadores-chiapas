@@ -1,5 +1,6 @@
 import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'node:path'
+import { loadLocalEnvFile } from './core/config/env'
 import { initDb } from './core/db'
 import { runSeeds } from './core/db/seeds'
 import { bus } from './core/events/bus'
@@ -64,6 +65,8 @@ function createWindow(): void {
 }
 
 void app.whenReady().then(() => {
+  loadLocalEnvFile()
+
   const dataDir = process.env['AMS_DATA_DIR'] ?? join(app.getPath('userData'), 'data')
   const migrationsDir = app.isPackaged
     ? join(process.resourcesPath, 'drizzle')

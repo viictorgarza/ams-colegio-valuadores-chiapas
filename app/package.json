@@ -15,7 +15,7 @@
     "db:generate": "drizzle-kit generate",
     "smoke": "cross-env ELECTRON_RUN_AS_NODE=1 electron node_modules/tsx/dist/cli.mjs scripts/smoke.ts",
     "postinstall": "node scripts/native-prebuilds.mjs",
-    "package:win": "electron-vite build && electron-builder --win --publish never"
+    "package:win": "bash scripts/package-win.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1085.0",
@@ -57,6 +57,7 @@
   "build": {
     "appId": "mx.org.cevpchiapas.ams",
     "productName": "AMS",
+    "executableName": "AMS Chiapas",
     "directories": {
       "buildResources": "build",
       "output": "release"
@@ -65,6 +66,12 @@
       "out/**/*",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "drizzle",
+        "to": "drizzle"
+      }
+    ],
     "npmRebuild": false,
     "win": {
       "target": "nsis",
@@ -72,6 +79,7 @@
     },
     "nsis": {
       "oneClick": false,
+      "perMachine": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true
     },

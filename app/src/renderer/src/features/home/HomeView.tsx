@@ -38,6 +38,15 @@ function todayLocal(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 }
 
+/** Saludo según la hora local, como pidió Victor (2026-07-13) para que el
+ * dashboard se sienta más cálido que un "Hola" genérico. */
+function greeting(): string {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Buenos días'
+  if (hour < 20) return 'Buenas tardes'
+  return 'Buenas noches'
+}
+
 function shortDateLabel(day: string): string {
   const [y, m, d] = day.split('-').map(Number)
   const date = new Date(y!, m! - 1, d!)
@@ -78,7 +87,7 @@ export function HomeView(props: {
   return (
     <div className="p-8 max-w-6xl mx-auto w-full">
       <h1 className="text-xl font-semibold tracking-tight">
-        Hola, {props.user.fullName.split(' ')[0]}.
+        {greeting()}, {props.user.fullName.split(' ')[0]}.
       </h1>
       <p className="text-[13px] text-ink3 mt-1">Un vistazo del sistema y lo que necesita tu atención.</p>
 

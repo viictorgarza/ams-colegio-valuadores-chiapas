@@ -17,5 +17,7 @@ export function register(): void {
 
   handle(contracts.users.list, () => service.listUsers())
   handle(contracts.users.create, (input) => service.createUser(input, actor()))
+  handle(contracts.users.update, ({ id, fullName, username }) => service.updateUser(id, { fullName, username }, actor()))
+  handle(contracts.users.resetPassword, ({ id, newPassword }) => service.adminResetPassword(id, newPassword, actor()))
   handle(contracts.users.setActive, ({ id, isActive }) => service.setUserActive(id, isActive, actor()))
 }

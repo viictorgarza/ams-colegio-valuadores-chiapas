@@ -55,6 +55,7 @@ export function Shell(props: {
   user: SessionUser
   org: Organization | null
   onLogout: () => void
+  onUserChanged: (u: SessionUser) => void
   initialView?: 'inicio' | 'miembros'
 }): React.JSX.Element {
   const [view, setView] = useState<View>(() =>
@@ -187,7 +188,9 @@ export function Shell(props: {
             <DocumentsOverviewView onOpenMember={(id) => setView({ name: 'miembro', id })} />
           )}
           {view.name === 'asistencias' && <AssembliesView />}
-          {view.name === 'configuracion' && <ConfiguracionView />}
+          {view.name === 'configuracion' && (
+            <ConfiguracionView user={props.user} onUserChanged={props.onUserChanged} />
+          )}
         </main>
       </div>
 

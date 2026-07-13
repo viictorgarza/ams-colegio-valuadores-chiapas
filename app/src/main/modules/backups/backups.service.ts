@@ -10,14 +10,13 @@ import { v7 as uuidv7 } from 'uuid'
 import { closeDb, getDb, getSqlite } from '@main/core/db'
 import * as s from '@main/core/db/schema'
 import { bus } from '@main/core/events/bus'
-import { getSetting, setSetting } from '@main/core/db/settings'
+import { getSetting } from '@main/core/db/settings'
 import type {
   CloudConfigStatus,
   CreateBackupResult,
   CreateCloudBackupResult,
   LastBackup,
   RestoreBackupResult,
-  SetCloudConfigInput,
   TestCloudConnectionResult
 } from '@shared/contracts'
 
@@ -129,8 +128,10 @@ export async function restoreFromLocalBackup(): Promise<RestoreBackupResult> {
 
 // ── Respaldo en la nube (Cloudflare R2, S3-compatible) ──────────────────────
 // Sin cifrado, mismo criterio que el respaldo local (decisión de Victor,
-// 2026-07-12). Credenciales guardadas en settings, igual que la API key de
-// OCR — nunca se vuelven a mostrar una vez guardadas.
+// 2026-07-12). Configuración inherente del sistema (decisión de Victor,
+// 2026-07-13): ya no se captura desde la UI — se lee de variables de entorno
+// por instalación, para que la secretaria nunca vea ni pueda tocar las
+// credenciales. Ver docs/05 o el README para la lista de variables.
 
 interface CloudConfig {
   accountId: string
@@ -140,10 +141,10 @@ interface CloudConfig {
 }
 
 function readCloudConfig(): CloudConfig | null {
-  const accountId = getSetting<string | null>('r2_account_id', null)
-  const accessKeyId = getSetting<string | null>('r2_access_key_id', null)
-  const secretAccessKey = getSetting<string | null>('r2_secret_access_key', null)
-  const bucket = getSetting<string | null>('r2_bucket', null)
+  const accountId = process.env['AMS_R2_ACCOUNT_ID'] ?? null
+  const accessKeyId = process.env['AMS_R2_ACCESS_KEY_ID'] ?? null
+  const secretAccessKey = process.env['AMS_R2_SECRET_ACCESS_KEY'] ?? null
+  const bucket = process.env['AMS_R2_BUCKET'] ?? null
   if (!accountId || !accessKeyId || !secretAccessKey || !bucket) return null
   return { accountId, accessKeyId, secretAccessKey, bucket }
 }
@@ -163,14 +164,6 @@ export function getCloudConfig(): CloudConfigStatus {
     accountId: cfg?.accountId ?? null,
     bucket: cfg?.bucket ?? null
   }
-}
-
-export function setCloudConfig(input: SetCloudConfigInput): { ok: true } {
-  setSetting('r2_account_id', input.accountId)
-  setSetting('r2_access_key_id', input.accessKeyId)
-  setSetting('r2_secret_access_key', input.secretAccessKey)
-  setSetting('r2_bucket', input.bucket)
-  return { ok: true }
 }
 
 export async function testCloudConnection(): Promise<TestCloudConnectionResult> {

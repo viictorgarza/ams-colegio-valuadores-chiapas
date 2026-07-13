@@ -63,7 +63,6 @@ export interface DomainEvents {
     autoExpiresAt: string | null
   }
   'document.notes_changed': { actorId: string | null; memberId: string; memberDocumentId: string }
-  'ocr.api_key_changed': { actorId: string | null; configured: boolean }
   'document.deleted': {
     actorId: string | null
     memberId: string
@@ -95,6 +94,8 @@ export interface DomainEvents {
   'user.created': { actorId: string | null; userId: string; username: string; role: string }
   'user.active_changed': { actorId: string | null; userId: string; username: string; isActive: boolean }
   'user.password_changed': { actorId: string | null; userId: string; username: string }
+  'user.updated': { actorId: string | null; userId: string; fullName: string; username: string }
+  'user.password_reset': { actorId: string | null; userId: string; username: string }
   'first_run.completed': { actorId: string | null }
   'member.restored': { actorId: string | null; memberId: string }
   'payment.restored': { actorId: string | null; paymentId: string; memberId: string }

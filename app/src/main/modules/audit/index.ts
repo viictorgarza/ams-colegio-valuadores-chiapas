@@ -175,17 +175,6 @@ export function register(): void {
     })
   })
 
-  bus.on('ocr.api_key_changed', (e) => {
-    write({
-      userId: e.actorId,
-      action: 'ocr.configuracion',
-      entityType: 'settings',
-      entityId: 'google_vision_api_key',
-      afterJson: JSON.stringify({ configured: e.configured }),
-      device
-    })
-  })
-
   bus.on('document.notes_changed', (e) => {
     write({
       userId: e.actorId,
@@ -359,6 +348,28 @@ export function register(): void {
     write({
       userId: e.actorId,
       action: 'usuario.cambio_contrasena',
+      entityType: 'user',
+      entityId: e.userId,
+      afterJson: JSON.stringify({ username: e.username }),
+      device
+    })
+  })
+
+  bus.on('user.updated', (e) => {
+    write({
+      userId: e.actorId,
+      action: 'usuario.edicion',
+      entityType: 'user',
+      entityId: e.userId,
+      afterJson: JSON.stringify({ nombre: e.fullName, username: e.username }),
+      device
+    })
+  })
+
+  bus.on('user.password_reset', (e) => {
+    write({
+      userId: e.actorId,
+      action: 'usuario.restablecimiento_contrasena',
       entityType: 'user',
       entityId: e.userId,
       afterJson: JSON.stringify({ username: e.username }),

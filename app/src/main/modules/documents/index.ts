@@ -68,10 +68,5 @@ export function register(): void {
 
   handle(contracts.documents.getOcrStatus, () => ({ configured: service.isOcrConfigured() }))
 
-  handle(contracts.documents.setOcrApiKey, ({ apiKey }) => {
-    service.setOcrApiKey(apiKey, actor())
-    return { ok: true as const }
-  })
-
   handle(contracts.documents.detectExpiry, ({ versionId }) => service.detectExpiry(versionId))
 }

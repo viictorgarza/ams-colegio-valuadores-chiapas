@@ -26,14 +26,6 @@ export const cloudConfigStatusSchema = z.object({
 })
 export type CloudConfigStatus = z.output<typeof cloudConfigStatusSchema>
 
-export const setCloudConfigInputSchema = z.object({
-  accountId: z.string().trim().min(1).nullable(),
-  accessKeyId: z.string().trim().min(1).nullable(),
-  secretAccessKey: z.string().trim().min(1).nullable(),
-  bucket: z.string().trim().min(1).nullable()
-})
-export type SetCloudConfigInput = z.output<typeof setCloudConfigInputSchema>
-
 export const testCloudConnectionResultSchema = z.object({
   ok: z.boolean(),
   message: z.string()
@@ -57,7 +49,6 @@ export const backupsContracts = {
   restore: contract('backups:restore', z.void(), restoreBackupResultSchema),
   getLast: contract('backups:get-last', z.void(), lastBackupSchema.nullable()),
   getCloudConfig: contract('backups:get-cloud-config', z.void(), cloudConfigStatusSchema),
-  setCloudConfig: contract('backups:set-cloud-config', setCloudConfigInputSchema, z.object({ ok: z.literal(true) })),
   testCloudConnection: contract('backups:test-cloud-connection', z.void(), testCloudConnectionResultSchema),
   createCloudBackup: contract('backups:create-cloud', z.void(), createCloudBackupResultSchema),
   getLastCloudBackup: contract('backups:get-last-cloud', z.void(), lastBackupSchema.nullable()),

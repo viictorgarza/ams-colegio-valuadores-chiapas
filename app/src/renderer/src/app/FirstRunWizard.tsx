@@ -417,7 +417,7 @@ function RecoveryKitStep(props: { onNext: () => void; onBack: () => void }): Rea
       <p className="text-[13px]">
         {cloud?.configured
           ? `Respaldo en la nube configurado (bucket "${cloud.bucket}").`
-          : 'Respaldo en la nube sin configurar todavía — puedes hacerlo después en Configuración → Respaldos.'}
+          : 'Respaldo en la nube sin configurar en esta instalación.'}
       </p>
       <Button variant="primary" icon={faPrint} disabled={busy} onClick={() => void generate()}>
         Generar kit de recuperación (PDF)

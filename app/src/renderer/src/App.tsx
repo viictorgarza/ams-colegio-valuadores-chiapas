@@ -4,6 +4,7 @@ import { api } from './api'
 import { LoginScreen } from './features/auth/LoginScreen'
 import { Shell } from './app/Shell'
 import { FirstRunWizard } from './app/FirstRunWizard'
+import { ToastProvider } from './components/Toast'
 
 /** Auto-bloqueo (M4/E-08): cierra la sesión sola tras N minutos sin mover el
  * mouse ni el teclado — pensado para la laptop compartida de la secretaria.
@@ -70,33 +71,38 @@ export default function App(): React.JSX.Element | null {
   useAutoLock(booted && user !== null && !firstRunPending, handleIdleLock)
 
   if (!booted) return null
-  if (!user) {
-    return (
-      <LoginScreen
-        org={org}
-        onLogin={(u) => {
-          setLockedMessage(null)
-          setUser(u)
-        }}
-        message={lockedMessage}
-      />
-    )
-  }
 
-  if (firstRunPending) {
-    return (
-      <FirstRunWizard
-        user={user}
-        org={org}
-        onFinish={(updatedUser) => {
-          setUser(updatedUser)
-          void api.organization.get().then(setOrg)
-          setFirstRunPending(false)
-          setLandOnMembers(true)
-        }}
-      />
-    )
-  }
-
-  return <Shell user={user} org={org} onLogout={handleLogout} initialView={landOnMembers ? 'miembros' : 'inicio'} />
+  return (
+    <ToastProvider>
+      {!user ? (
+        <LoginScreen
+          org={org}
+          onLogin={(u) => {
+            setLockedMessage(null)
+            setUser(u)
+          }}
+          message={lockedMessage}
+        />
+      ) : firstRunPending ? (
+        <FirstRunWizard
+          user={user}
+          org={org}
+          onFinish={(updatedUser) => {
+            setUser(updatedUser)
+            void api.organization.get().then(setOrg)
+            setFirstRunPending(false)
+            setLandOnMembers(true)
+          }}
+        />
+      ) : (
+        <Shell
+          user={user}
+          org={org}
+          onLogout={handleLogout}
+          onUserChanged={setUser}
+          initialView={landOnMembers ? 'miembros' : 'inicio'}
+        />
+      )}
+    </ToastProvider>
+  )
 }

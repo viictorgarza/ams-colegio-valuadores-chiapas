@@ -3,6 +3,7 @@ import { faCheckCircle, faImage, faTrashCan } from '@fortawesome/free-solid-svg-
 import type { Organization } from '@shared/contracts'
 import { api } from '@renderer/api'
 import { Button, Field, Icon, TextInput } from '@renderer/components/ui'
+import { useToast } from '@renderer/components/Toast'
 
 /** Configuración → Organización (M5): antes del wizard, estos datos solo se
  * podían capturar una vez, en la primera ejecución — sin forma de editarlos
@@ -21,6 +22,7 @@ export function OrganizationSettingsView(): React.JSX.Element {
   const [website, setWebsite] = useState('')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState<{ tone: 'good' | 'bad'; text: string } | null>(null)
+  const notify = useToast()
 
   function reload(): void {
     void api.organization.get().then((o) => {
@@ -62,7 +64,7 @@ export function OrganizationSettingsView(): React.JSX.Element {
         website: website.trim() || null
       })
       setOrg(updated)
-      setMessage({ tone: 'good', text: 'Datos guardados.' })
+      notify('Datos guardados.')
     } catch {
       setMessage({ tone: 'bad', text: 'No se pudo guardar. Verifica el correo electrónico.' })
     } finally {
