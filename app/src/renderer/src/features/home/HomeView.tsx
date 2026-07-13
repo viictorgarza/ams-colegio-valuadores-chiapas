@@ -82,13 +82,6 @@ export function HomeView(props: {
       </h1>
       <p className="text-[13px] text-ink3 mt-1">Un vistazo del sistema y lo que necesita tu atención.</p>
 
-      {props.user.mustChangePassword && (
-        <p className="mt-4 text-[13px] text-warn bg-warn-bg rounded-lg px-3 py-2 max-w-xl">
-          Estás usando las credenciales iniciales de desarrollo. El asistente de primera
-          ejecución (hito M5) obligará a definir contraseñas reales.
-        </p>
-      )}
-
       {info && (
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
           <Stat icon={faUsers} label="Miembros" value={String(info.memberCount)} onClick={props.onOpenMembers} />

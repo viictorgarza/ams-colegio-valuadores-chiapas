@@ -4,9 +4,21 @@ import { handle } from '@main/core/ipc/registry'
 import { contracts } from '@shared/contracts'
 import { getDb, getSqlite } from '@main/core/db'
 import * as s from '@main/core/db/schema'
+import { getSetting, setSetting } from '@main/core/db/settings'
+import { bus } from '@main/core/events/bus'
+import { me } from '../users/users.service'
 import type { SQLiteTable } from 'drizzle-orm/sqlite-core'
 
+const actor = (): string | null => me()?.id ?? null
+
 export function register(): void {
+  handle(contracts.system.firstRunPending, () => !getSetting<boolean>('first_run_completed', false))
+  handle(contracts.system.completeFirstRun, () => {
+    setSetting('first_run_completed', true)
+    bus.emit('first_run.completed', { actorId: actor() })
+    return { ok: true as const }
+  })
+
   handle(contracts.system.info, () => {
     const db = getDb()
     const rows = (table: SQLiteTable): number =>

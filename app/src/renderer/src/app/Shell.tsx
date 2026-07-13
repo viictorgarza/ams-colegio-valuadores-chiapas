@@ -55,8 +55,11 @@ export function Shell(props: {
   user: SessionUser
   org: Organization | null
   onLogout: () => void
+  initialView?: 'inicio' | 'miembros'
 }): React.JSX.Element {
-  const [view, setView] = useState<View>({ name: 'inicio' })
+  const [view, setView] = useState<View>(() =>
+    props.initialView === 'miembros' ? { name: 'miembros' } : { name: 'inicio' }
+  )
   const [showNewMember, setShowNewMember] = useState(false)
   const [showNewPayment, setShowNewPayment] = useState(false)
   const [showNewEvent, setShowNewEvent] = useState(false)

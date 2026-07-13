@@ -8,6 +8,7 @@ import { documentsContracts } from './documents'
 import { backupsContracts } from './backups'
 import { eventsContracts } from './events'
 import { assembliesContracts } from './assemblies'
+import { usersContracts } from './users'
 import type { Contract } from './core'
 
 export const contracts = {
@@ -20,7 +21,8 @@ export const contracts = {
   documents: documentsContracts,
   backups: backupsContracts,
   events: eventsContracts,
-  assemblies: assembliesContracts
+  assemblies: assembliesContracts,
+  users: usersContracts
 }
 
 /** Lista plana de canales permitidos — el preload solo deja pasar estos. */
@@ -45,3 +47,4 @@ export * from './documents'
 export * from './backups'
 export * from './events'
 export * from './assemblies'
+export * from './users'

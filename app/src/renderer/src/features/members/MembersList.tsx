@@ -119,7 +119,7 @@ export function MembersList(props: { onOpen: (id: string) => void }): React.JSX.
         emptyMessage={
           search || filter !== 'todos'
             ? 'Sin resultados con esta búsqueda o filtro.'
-            : 'Aún no hay miembros — crea el primero o espera el importador (E-03).'
+            : 'Aún no hay miembros — usa "Nuevo miembro" para dar de alta al primero.'
         }
       />
 

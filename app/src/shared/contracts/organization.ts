@@ -18,6 +18,24 @@ export const organizationSchema = z.object({
 
 export type Organization = z.output<typeof organizationSchema>
 
+const optionalText = z.string().trim().min(1).nullable()
+
+export const updateOrganizationSchema = z.object({
+  name: z.string().trim().min(1, 'El nombre es obligatorio'),
+  shortName: optionalText,
+  rfc: optionalText,
+  street: optionalText,
+  city: optionalText,
+  state: optionalText,
+  zip: optionalText,
+  country: optionalText,
+  phone: optionalText,
+  email: z.string().trim().email('Correo inválido').nullable(),
+  website: optionalText
+})
+export type UpdateOrganizationInput = z.output<typeof updateOrganizationSchema>
+
 export const organizationContracts = {
-  get: contract('organization:get', z.void(), organizationSchema.nullable())
+  get: contract('organization:get', z.void(), organizationSchema.nullable()),
+  update: contract('organization:update', updateOrganizationSchema, organizationSchema)
 }

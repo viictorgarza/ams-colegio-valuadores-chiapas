@@ -13,5 +13,7 @@ export const systemContracts = {
       documentTypeCount: z.number(),
       requiredDocumentTypes: z.array(z.string())
     })
-  )
+  ),
+  firstRunPending: contract('system:first-run-pending', z.void(), z.boolean()),
+  completeFirstRun: contract('system:complete-first-run', z.void(), z.object({ ok: z.literal(true) }))
 }

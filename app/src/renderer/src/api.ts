@@ -17,13 +17,22 @@ export const api = {
   auth: {
     login: caller(contracts.auth.login),
     me: caller(contracts.auth.me),
-    logout: caller(contracts.auth.logout)
+    logout: caller(contracts.auth.logout),
+    changePassword: caller(contracts.auth.changePassword)
   },
   organization: {
-    get: caller(contracts.organization.get)
+    get: caller(contracts.organization.get),
+    update: caller(contracts.organization.update)
   },
   system: {
-    info: caller(contracts.system.info)
+    info: caller(contracts.system.info),
+    firstRunPending: caller(contracts.system.firstRunPending),
+    completeFirstRun: caller(contracts.system.completeFirstRun)
+  },
+  users: {
+    list: caller(contracts.users.list),
+    create: caller(contracts.users.create),
+    setActive: caller(contracts.users.setActive)
   },
   members: {
     list: caller(contracts.members.list),
@@ -82,7 +91,8 @@ export const api = {
     setCloudConfig: caller(contracts.backups.setCloudConfig),
     testCloudConnection: caller(contracts.backups.testCloudConnection),
     createCloudBackup: caller(contracts.backups.createCloudBackup),
-    getLastCloudBackup: caller(contracts.backups.getLastCloudBackup)
+    getLastCloudBackup: caller(contracts.backups.getLastCloudBackup),
+    generateRecoveryKit: caller(contracts.backups.generateRecoveryKit)
   },
   events: {
     list: caller(contracts.events.list),

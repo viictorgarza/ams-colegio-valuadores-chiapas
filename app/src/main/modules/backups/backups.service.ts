@@ -25,7 +25,7 @@ import type {
 // vive junto al servicio, sin capa central. Sin cifrado (decisión de Victor,
 // 2026-07-12): los respaldos son snapshots planos de ams.db.
 
-function dataDir(): string {
+export function dataDir(): string {
   return process.env['AMS_DATA_DIR'] ?? join(app.getPath('userData'), 'data')
 }
 

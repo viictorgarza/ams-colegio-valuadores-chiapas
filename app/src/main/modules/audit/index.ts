@@ -323,6 +323,52 @@ export function register(): void {
       device
     })
   })
+
+  bus.on('organization.updated', (e) => {
+    write({
+      userId: e.actorId,
+      action: 'organizacion.edicion',
+      afterJson: JSON.stringify({ nombre: e.name }),
+      device
+    })
+  })
+
+  bus.on('user.created', (e) => {
+    write({
+      userId: e.actorId,
+      action: 'usuario.alta',
+      entityType: 'user',
+      entityId: e.userId,
+      afterJson: JSON.stringify({ username: e.username, rol: e.role }),
+      device
+    })
+  })
+
+  bus.on('user.active_changed', (e) => {
+    write({
+      userId: e.actorId,
+      action: 'usuario.activacion',
+      entityType: 'user',
+      entityId: e.userId,
+      afterJson: JSON.stringify({ username: e.username, activo: e.isActive }),
+      device
+    })
+  })
+
+  bus.on('user.password_changed', (e) => {
+    write({
+      userId: e.actorId,
+      action: 'usuario.cambio_contrasena',
+      entityType: 'user',
+      entityId: e.userId,
+      afterJson: JSON.stringify({ username: e.username }),
+      device
+    })
+  })
+
+  bus.on('first_run.completed', (e) => {
+    write({ userId: e.actorId, action: 'sistema.primera_ejecucion_completada', device })
+  })
 }
 
 function write(entry: {

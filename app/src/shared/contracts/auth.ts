@@ -16,6 +16,11 @@ const loginResultSchema = z.union([
   z.object({ ok: z.literal(false), reason: z.enum(['credenciales_invalidas', 'usuario_inactivo']) })
 ])
 
+const changePasswordResultSchema = z.union([
+  z.object({ ok: z.literal(true), user: sessionUserSchema }),
+  z.object({ ok: z.literal(false), reason: z.enum(['contrasena_actual_incorrecta']) })
+])
+
 export const authContracts = {
   login: contract(
     'auth:login',
@@ -23,5 +28,10 @@ export const authContracts = {
     loginResultSchema
   ),
   me: contract('auth:me', z.void(), sessionUserSchema.nullable()),
-  logout: contract('auth:logout', z.void(), z.object({ ok: z.literal(true) }))
+  logout: contract('auth:logout', z.void(), z.object({ ok: z.literal(true) })),
+  changePassword: contract(
+    'auth:change-password',
+    z.object({ currentPassword: z.string().min(1), newPassword: z.string().min(8, 'Mínimo 8 caracteres') }),
+    changePasswordResultSchema
+  )
 }

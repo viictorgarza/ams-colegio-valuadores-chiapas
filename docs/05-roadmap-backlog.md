@@ -54,10 +54,10 @@ Tamaños: S (días), M (≈1 semana), L (>1 semana), como referencia relativa.
 | E-04 | Anualidades y pagos | Catálogo de cuotas por año; registro de pagos (3 tipos); estado calculado en vista SQL; pantalla Anualidades por año; recibo PDF con folio secuencial | M2 | L |
 | E-05 | Expediente documental | Almacén por hash; arrastrar y clasificar; versiones con historial; físico + ubicación; vencimientos derivados; barra de progreso por los 7 requeridos | M3 | L |
 | E-06 | Dashboard | Vistas SQL agregadas; indicadores accionables (clic = lista filtrada); listas de pendientes con teléfono y pago en línea | M3 | M |
-| E-07 | Respaldos | Snapshot consistente (VACUUM INTO); paquete cifrado AES-256-GCM; subida a R2 con verificación; rotación GFS; copia local diaria; USB designada; restauración guiada; kit de recuperación imprimible | M4 | L |
+| E-07 | Respaldos | Snapshot consistente (VACUUM INTO) ✅; respaldo en la nube a Cloudflare R2 ✅; restauración guiada ✅; kit de recuperación imprimible ✅ (2026-07-12, sin membrete todavía). **Sin cifrado ni rotación GFS ni USB designada — decisión consciente de Victor, no reabrir** | M4 | L |
 | E-08 | Seguridad transversal | Papelera con restauración en todas las entidades; auditoría append-only por eventos; auto-bloqueo configurable | M4 | M |
-| E-09 | Configuración | Organización (datos y logo); catálogos editables (tipos de documento, cuotas, estados, tipos de membresía); usuarios y contraseñas; ajustes de respaldo | M3–M4 | M |
-| E-10 | Distribución | electron-builder NSIS; electron-updater vía GitHub Releases; asistente de primera ejecución (organización → usuarios → kit → importar) | M5 | M |
+| E-09 | Configuración | Organización (datos) ✅ 2026-07-12 — falta logo; catálogos editables (tipos de documento ✅, cuotas ✅, estados, tipos de membresía); usuarios y contraseñas ✅ 2026-07-12 (alta, activar/desactivar, cambio de contraseña propia); ajustes de respaldo ✅ | M3–M4 | M |
+| E-10 | Distribución | electron-builder NSIS ✅; electron-updater vía GitHub Releases ✅; asistente de primera ejecución (organización → usuarios → kit de recuperación → bienvenida a Miembros) ✅ | M5 | M |
 
 ## 4. Criterio de terminado del MVP
 

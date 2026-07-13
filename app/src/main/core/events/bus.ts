@@ -91,6 +91,11 @@ export interface DomainEvents {
     memberId: string
     present: boolean
   }
+  'organization.updated': { actorId: string | null; name: string }
+  'user.created': { actorId: string | null; userId: string; username: string; role: string }
+  'user.active_changed': { actorId: string | null; userId: string; username: string; isActive: boolean }
+  'user.password_changed': { actorId: string | null; userId: string; username: string }
+  'first_run.completed': { actorId: string | null }
 }
 
 class TypedBus {

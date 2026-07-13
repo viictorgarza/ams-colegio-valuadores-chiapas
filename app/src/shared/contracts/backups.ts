@@ -46,6 +46,12 @@ export const createCloudBackupResultSchema = z.object({
 })
 export type CreateCloudBackupResult = z.output<typeof createCloudBackupResultSchema>
 
+export const generateRecoveryKitResultSchema = z.object({
+  saved: z.boolean(),
+  path: z.string().nullable()
+})
+export type GenerateRecoveryKitResult = z.output<typeof generateRecoveryKitResultSchema>
+
 export const backupsContracts = {
   create: contract('backups:create', z.void(), createBackupResultSchema),
   restore: contract('backups:restore', z.void(), restoreBackupResultSchema),
@@ -54,5 +60,6 @@ export const backupsContracts = {
   setCloudConfig: contract('backups:set-cloud-config', setCloudConfigInputSchema, z.object({ ok: z.literal(true) })),
   testCloudConnection: contract('backups:test-cloud-connection', z.void(), testCloudConnectionResultSchema),
   createCloudBackup: contract('backups:create-cloud', z.void(), createCloudBackupResultSchema),
-  getLastCloudBackup: contract('backups:get-last-cloud', z.void(), lastBackupSchema.nullable())
+  getLastCloudBackup: contract('backups:get-last-cloud', z.void(), lastBackupSchema.nullable()),
+  generateRecoveryKit: contract('backups:generate-recovery-kit', z.void(), generateRecoveryKitResultSchema)
 }
