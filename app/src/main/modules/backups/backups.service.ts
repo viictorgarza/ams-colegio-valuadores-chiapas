@@ -10,7 +10,6 @@ import { v7 as uuidv7 } from 'uuid'
 import { closeDb, getDb, getSqlite } from '@main/core/db'
 import * as s from '@main/core/db/schema'
 import { bus } from '@main/core/events/bus'
-import { getSetting } from '@main/core/db/settings'
 import type {
   CloudConfigStatus,
   CreateBackupResult,
@@ -256,21 +255,20 @@ export async function createCloudBackup(actorId: string | null): Promise<CreateC
   }
 }
 
-/** Disparo automático y silencioso al abrir la app (docs/05 E-07): solo si hay
- * config guardada y ya pasó el intervalo mínimo desde el último respaldo r2
- * exitoso. Sin diálogos de progreso ni de error — si no hay internet (oficina
- * sin conexión) simplemente falla callado, igual que el auto-updater. */
-export async function maybeRunAutoCloudBackup(): Promise<void> {
-  if (!readCloudConfig()) return
-  const minHours = getSetting<number>('cloud_backup_min_interval_hours', 24)
-  const last = getLastCloudBackup()
-  if (last?.finishedAt) {
-    const hoursSince = (Date.now() - new Date(last.finishedAt).getTime()) / 3_600_000
-    if (hoursSince < minHours) return
-  }
+/** Disparo automático y silencioso en cada apertura de la app (decisión de
+ * Victor 2026-07-13, reemplaza el intervalo mínimo de 24h). Sin diálogos de
+ * progreso ni de error — si no hay internet (oficina sin conexión) falla
+ * callado y devuelve false para que el llamador reintente más tarde; los
+ * datos siguen en el SQLite local, así que no hay nada extra que "cachear".
+ * Devuelve true cuando ya no hace falta reintentar (éxito o sin config). */
+export async function runStartupCloudBackup(): Promise<boolean> {
+  if (!readCloudConfig()) return true
   try {
-    await createCloudBackup(null)
+    const result = await createCloudBackup(null)
+    if (!result.ok) console.error('[respaldo-nube] falló el respaldo automático:', result.message)
+    return result.ok
   } catch (err) {
     console.error('[respaldo-nube] falló el respaldo automático:', err instanceof Error ? err.message : err)
+    return false
   }
 }
