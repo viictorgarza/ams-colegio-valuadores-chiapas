@@ -22,6 +22,13 @@ export function register(): void {
     return { saved: path !== null, path }
   })
 
-  // Silencioso, best-effort — ver maybeRunAutoCloudBackup para el criterio.
-  setTimeout(() => void service.maybeRunAutoCloudBackup(), 15_000)
+  // Respaldo a la nube en cada apertura (Victor, 2026-07-13). Silencioso:
+  // primer intento a los 15s; si falla (sin internet), reintenta cada 10 min
+  // hasta lograr un respaldo exitoso en esta sesión.
+  const RETRY_MS = 10 * 60_000
+  const attemptCloudBackup = async (): Promise<void> => {
+    const done = await service.runStartupCloudBackup()
+    if (!done) setTimeout(() => void attemptCloudBackup(), RETRY_MS)
+  }
+  setTimeout(() => void attemptCloudBackup(), 15_000)
 }

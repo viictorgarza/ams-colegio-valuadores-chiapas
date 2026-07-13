@@ -8,3 +8,8 @@ app/release/
 .claude/
 .DS_Store
 *.local
+
+# Nube (cloud/)
+cloud/server/.wrangler/
+cloud/server/public/
+cloud/pwa/*.tsbuildinfo

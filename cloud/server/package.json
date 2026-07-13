@@ -1,0 +1,23 @@
+{
+  "name": "ams-nube-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend en Cloudflare Workers + D1 para la PWA del AMS (iPad y otros clientes)",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply ams --local",
+    "db:migrate:remote": "wrangler d1 migrations apply ams --remote"
+  },
+  "dependencies": {
+    "hono": "^4.6.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260708.1",
+    "typescript": "^5.8.0",
+    "wrangler": "^4.0.0"
+  }
+}

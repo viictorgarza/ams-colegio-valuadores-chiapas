@@ -1,0 +1,74 @@
+@import 'tailwindcss';
+
+/*
+ * Mismos tokens del sistema visual del escritorio (app/src/renderer/src/styles.css,
+ * docs/04 §7): azul institucional #163EAB, neutros fríos, Segoe UI/SF.
+ */
+@theme {
+  --color-bg: #f3f5f9;
+  --color-surface: #ffffff;
+  --color-sidebar: #eef1f6;
+  --color-inset: #f6f8fb;
+  --color-ink: #1a2130;
+  --color-ink2: #566175;
+  --color-ink3: #8a94a8;
+  --color-line: #e2e7ef;
+  --color-accent: #163eab;
+  --color-accent-hover: #102e86;
+  --color-accent-soft: #e8eefb;
+  --color-good: #1e7c3c;
+  --color-good-bg: #e7f4ea;
+  --color-warn: #96590b;
+  --color-warn-bg: #fbf1dd;
+  --color-bad: #b42323;
+  --color-bad-bg: #fbeaea;
+  --color-on-accent: #ffffff;
+
+  --font-sans: -apple-system, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #12151c;
+  --color-surface: #1a1e28;
+  --color-sidebar: #161a22;
+  --color-inset: #20242f;
+  --color-ink: #e7ebf5;
+  --color-ink2: #a8b0c2;
+  --color-ink3: #767f93;
+  --color-line: #2b303c;
+  --color-accent: #7e9be8;
+  --color-accent-hover: #96b0ee;
+  --color-accent-soft: #232c47;
+  --color-good: #5cc584;
+  --color-good-bg: #163223;
+  --color-warn: #e0aa4f;
+  --color-warn-bg: #3a2c12;
+  --color-bad: #ea6b6b;
+  --color-bad-bg: #3a1a1a;
+  --color-on-accent: #12151c;
+}
+
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  /* 16px base (no 14 como el escritorio): en iPad evita el auto-zoom de Safari
+   * al enfocar inputs y da tamaños de toque más cómodos. */
+  font-size: 16px;
+  /* Sensación de app nativa en modo standalone. */
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+*, *::before, *::after {
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+/* Respeta las zonas seguras del iPad (notch/home indicator). */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}

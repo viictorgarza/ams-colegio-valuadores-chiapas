@@ -1,0 +1,25 @@
+{
+  // Worker único: sirve la API (/api/*) y los archivos estáticos de la PWA.
+  // Mismo origen → sin CORS, un solo deploy, una sola URL para el iPad.
+  "name": "ams-nube",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./public",
+    // SPA: cualquier ruta que no sea archivo regresa index.html (la PWA rutea sola).
+    "not_found_handling": "single-page-application",
+    // /api/* siempre pasa por el Worker aunque exista un archivo con ese nombre.
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ams",
+      // ⚠️ Reemplazar con el id real después de `wrangler d1 create ams`
+      // (ver docs/07-despliegue-nube.md). Para `wrangler dev` local no importa.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": { "enabled": true }
+}
