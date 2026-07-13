@@ -21,8 +21,9 @@ const TABS: Array<{ key: Tab; label: string }> = [
 export function ConfiguracionView(props: {
   user: SessionUser
   onUserChanged: (u: SessionUser) => void
+  initialTab?: Tab
 }): React.JSX.Element {
-  const [tab, setTab] = useState<Tab>('organizacion')
+  const [tab, setTab] = useState<Tab>(props.initialTab ?? 'organizacion')
   const tabs = TABS.filter((t) => t.key !== 'usuarios' || props.user.role === 'admin')
 
   return (

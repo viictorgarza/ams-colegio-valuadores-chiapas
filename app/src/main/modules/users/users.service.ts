@@ -1,9 +1,11 @@
+import { randomBytes } from 'node:crypto'
 import { and, eq, isNull, ne } from 'drizzle-orm'
 import { v7 as uuidv7 } from 'uuid'
 // Imports relativos a propósito: este servicio también se ejecuta fuera del bundle
 // de Electron (scripts/smoke.ts con tsx), donde los alias no existen.
 import { getDb } from '../../core/db'
 import * as s from '../../core/db/schema'
+import { getSetting, setSetting } from '../../core/db/settings'
 import { hashPassword, verifyPassword } from '../../core/crypto/password'
 import { bus } from '../../core/events/bus'
 import type { CreateUserInput, SessionUser, User } from '../../../shared/contracts'
@@ -153,6 +155,84 @@ export function adminResetPassword(id: string, newPassword: string, actorId: str
     .where(eq(s.users.id, id))
     .run()
   bus.emit('user.password_reset', { actorId, userId: id, username: row?.username ?? '' })
+  return { ok: true }
+}
+
+// Recuperación local de acceso (redesign/ui-ux-pro-max, 2026-07-13): por diseño
+// NO hay una contraseña maestra fija en el código — eso sería una puerta trasera
+// que cualquiera podría extraer del instalador y usar contra cualquier instalación
+// del Colegio. En su lugar, cada instalación genera su propio código aleatorio
+// (visible una sola vez), guardado siempre hasheado con el mismo scrypt que las
+// contraseñas. Solo un admin ya logueado puede generarlo/regenerarlo desde
+// Configuración → Seguridad; se usa después, sin sesión, en la pantalla de login.
+const RECOVERY_CODE_HASH_KEY = 'security.recovery_code_hash'
+const RECOVERY_ATTEMPTS_KEY = 'security.recovery_failed_attempts'
+const RECOVERY_LOCK_UNTIL_KEY = 'security.recovery_locked_until'
+const MAX_RECOVERY_ATTEMPTS = 5
+const RECOVERY_LOCKOUT_MS = 15 * 60 * 1000
+
+function formatRecoveryCode(raw: Buffer): string {
+  const hex = raw.toString('hex').toUpperCase().slice(0, 16)
+  return hex.match(/.{1,4}/g)!.join('-')
+}
+
+export function hasRecoveryCode(): boolean {
+  return getSetting<string | null>(RECOVERY_CODE_HASH_KEY, null) !== null
+}
+
+/** Genera (o reemplaza) el código de recuperación de esta instalación. El
+ * código en texto plano se devuelve una sola vez — solo se guarda su hash. */
+export function generateRecoveryCode(actorId: string | null): { code: string } {
+  const code = formatRecoveryCode(randomBytes(8))
+  setSetting(RECOVERY_CODE_HASH_KEY, hashPassword(code))
+  setSetting(RECOVERY_ATTEMPTS_KEY, 0)
+  setSetting(RECOVERY_LOCK_UNTIL_KEY, null)
+  bus.emit('security.recovery_code_generated', { actorId })
+  return { code }
+}
+
+export type RecoverPasswordResult =
+  | { ok: true }
+  | { ok: false; reason: 'sin_codigo' | 'codigo_incorrecto' | 'usuario_no_encontrado' | 'bloqueado' }
+
+/** Restablece la contraseña de `username` si `code` coincide con el código de
+ * recuperación de la instalación. Sin sesión activa (se usa desde el login).
+ * Bloquea intentos tras 5 fallos por 15 minutos para frenar fuerza bruta local. */
+export function recoverPasswordWithCode(code: string, username: string, newPassword: string): RecoverPasswordResult {
+  const storedHash = getSetting<string | null>(RECOVERY_CODE_HASH_KEY, null)
+  if (!storedHash) return { ok: false, reason: 'sin_codigo' }
+
+  const lockedUntil = getSetting<string | null>(RECOVERY_LOCK_UNTIL_KEY, null)
+  if (lockedUntil && new Date(lockedUntil).getTime() > Date.now()) {
+    return { ok: false, reason: 'bloqueado' }
+  }
+
+  if (!verifyPassword(code, storedHash)) {
+    const attempts = getSetting<number>(RECOVERY_ATTEMPTS_KEY, 0) + 1
+    setSetting(RECOVERY_ATTEMPTS_KEY, attempts)
+    if (attempts >= MAX_RECOVERY_ATTEMPTS) {
+      setSetting(RECOVERY_LOCK_UNTIL_KEY, new Date(Date.now() + RECOVERY_LOCKOUT_MS).toISOString())
+    }
+    return { ok: false, reason: 'codigo_incorrecto' }
+  }
+
+  const db = getDb()
+  const row = db.select().from(s.users).where(eq(s.users.username, username)).get()
+  if (!row || row.deletedAt) return { ok: false, reason: 'usuario_no_encontrado' }
+
+  db.update(s.users)
+    .set({
+      passwordHash: hashPassword(newPassword),
+      mustChangePassword: false,
+      isActive: true,
+      updatedAt: new Date().toISOString()
+    })
+    .where(eq(s.users.id, row.id))
+    .run()
+
+  setSetting(RECOVERY_ATTEMPTS_KEY, 0)
+  setSetting(RECOVERY_LOCK_UNTIL_KEY, null)
+  bus.emit('user.password_recovered', { userId: row.id, username: row.username })
   return { ok: true }
 }
 

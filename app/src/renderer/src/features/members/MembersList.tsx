@@ -117,9 +117,16 @@ export function MembersList(props: { onOpen: (id: string) => void }): React.JSX.
         highlightedId={items[highlight]?.id}
         onHover={(id) => setHighlight(items.findIndex((m) => m.id === id))}
         emptyMessage={
-          search || filter !== 'todos'
-            ? 'Sin resultados con esta búsqueda o filtro.'
-            : 'Aún no hay miembros — usa "Nuevo miembro" para dar de alta al primero.'
+          search || filter !== 'todos' ? (
+            'Sin resultados con esta búsqueda o filtro.'
+          ) : (
+            <span className="inline-flex items-center gap-2">
+              Aún no hay miembros.
+              <Button variant="primary" icon={faUserPlus} onClick={() => setShowNew(true)}>
+                Nuevo miembro
+              </Button>
+            </span>
+          )
         }
       />
 
@@ -185,7 +192,7 @@ export function NewMemberModal(props: {
         <Field label="Título">
           <TitleSelect value={title} onChange={setTitle} />
         </Field>
-        <Field label="Nombre(s)">
+        <Field label="Nombre(s)" required>
           <TextInput value={givenNames} onChange={setGivenNames} placeholder="Juan Carlos" />
         </Field>
       </div>

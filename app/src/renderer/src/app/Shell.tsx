@@ -34,7 +34,7 @@ type View =
   | { name: 'calendario' }
   | { name: 'documentos' }
   | { name: 'asistencias' }
-  | { name: 'configuracion' }
+  | { name: 'configuracion'; tab?: 'respaldos' }
 
 const NAV: Array<{
   key: 'inicio' | 'miembros' | 'anualidades' | 'calendario' | 'documentos' | 'asistencias' | 'configuracion'
@@ -95,12 +95,12 @@ export function Shell(props: {
 
   return (
     <div className="h-screen flex overflow-hidden">
-      <aside className="w-[212px] shrink-0 bg-sidebar border-r border-line flex flex-col p-3 h-full min-h-0">
+      <aside className="w-[212px] shrink-0 bg-sidebar border-r border-sidebar-line flex flex-col p-3 h-full min-h-0">
         <div className="flex items-center gap-2.5 px-2 pb-4 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-white grid place-items-center shrink-0 p-1 shadow-sm">
+          <div className="w-8 h-8 rounded-lg bg-white/95 grid place-items-center shrink-0 p-1 shadow-sm">
             <OrgLogo org={props.org} className="w-full h-full object-contain" />
           </div>
-          <div className="text-[11.5px] font-semibold leading-tight">
+          <div className="text-[11.5px] font-semibold leading-tight text-sidebar-ink">
             {props.org?.name ?? 'AMS'}
           </div>
         </div>
@@ -122,10 +122,10 @@ export function Shell(props: {
               }}
               className={
                 item.key === active
-                  ? 'flex items-center gap-2.5 text-left px-2.5 py-1.5 rounded-lg bg-accent-soft text-accent font-semibold text-[13.5px]'
+                  ? 'relative flex items-center gap-2.5 text-left pl-3.5 pr-2.5 py-1.5 rounded-lg bg-sidebar-active-bg text-sidebar-active-ink font-semibold text-[13.5px] outline-none focus-visible:ring-2 focus-visible:ring-sidebar-active-ink before:content-[""] before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-[3px] before:rounded-full before:bg-sidebar-active-ink'
                   : item.enabled
-                    ? 'flex items-center gap-2.5 text-left px-2.5 py-1.5 rounded-lg text-ink2 hover:bg-inset text-[13.5px]'
-                    : 'flex items-center gap-2.5 text-left px-2.5 py-1.5 rounded-lg text-ink3/60 text-[13.5px] cursor-not-allowed'
+                    ? 'flex items-center gap-2.5 text-left px-2.5 py-1.5 rounded-lg text-sidebar-ink2 hover:bg-white/5 hover:text-sidebar-ink text-[13.5px] outline-none focus-visible:ring-2 focus-visible:ring-sidebar-active-ink'
+                    : 'flex items-center gap-2.5 text-left px-2.5 py-1.5 rounded-lg text-sidebar-ink2/50 text-[13.5px] cursor-not-allowed'
               }
             >
               <Icon icon={item.icon} className="w-4 h-4 shrink-0" />
@@ -134,17 +134,21 @@ export function Shell(props: {
           ))}
         </nav>
         {lastBackup !== undefined && (
-          <div className="shrink-0 px-2 pb-2 text-[11px] text-ink3">
+          <button
+            onClick={() => setView({ name: 'configuracion', tab: 'respaldos' })}
+            title="Ir a Configuración → Respaldos"
+            className="shrink-0 px-2 pb-2 text-[11px] text-sidebar-ink2 hover:text-sidebar-ink text-left outline-none focus-visible:ring-2 focus-visible:ring-sidebar-active-ink rounded"
+          >
             {lastBackup?.finishedAt
               ? `Último respaldo: ${new Date(lastBackup.finishedAt).toLocaleString('es-MX', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}`
               : 'Sin respaldos todavía'}
-          </div>
+          </button>
         )}
-        <div className="shrink-0 border-t border-line pt-3 px-2 flex items-center justify-between gap-2">
+        <div className="shrink-0 border-t border-sidebar-line pt-3 px-2 flex items-center justify-between gap-2">
           <ThemeToggle />
-          <div className="text-xs text-ink2 flex flex-col items-end gap-1">
-            <span>{props.user.fullName}</span>
-            <button onClick={props.onLogout} className="text-ink3 hover:text-ink">
+          <div className="text-xs text-sidebar-ink2 flex flex-col items-end gap-1">
+            <span className="text-sidebar-ink">{props.user.fullName}</span>
+            <button onClick={props.onLogout} className="text-sidebar-ink2 hover:text-sidebar-ink">
               Cerrar sesión
             </button>
           </div>
@@ -152,7 +156,7 @@ export function Shell(props: {
       </aside>
 
       <div className="flex-1 min-w-0 flex flex-col min-h-0">
-        <header className="sticky top-0 z-10 bg-surface border-b border-line px-6 py-3 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+        <header className="sticky top-0 z-10 bg-surface border-b border-line shadow-xs px-6 py-3 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
           <div />
           <div className="flex justify-center">
             <GlobalSearch onOpenMember={(id) => setView({ name: 'miembro', id })} />
@@ -189,7 +193,7 @@ export function Shell(props: {
           )}
           {view.name === 'asistencias' && <AssembliesView />}
           {view.name === 'configuracion' && (
-            <ConfiguracionView user={props.user} onUserChanged={props.onUserChanged} />
+            <ConfiguracionView user={props.user} onUserChanged={props.onUserChanged} initialTab={view.tab} />
           )}
         </main>
       </div>

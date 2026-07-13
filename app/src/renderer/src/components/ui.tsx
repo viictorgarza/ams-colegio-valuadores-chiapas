@@ -1,7 +1,15 @@
 import type { ReactNode } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
+import {
+  faSort,
+  faSortDown,
+  faSortUp,
+  faCircleCheck,
+  faCircleExclamation,
+  faCircleXmark,
+  faCircleMinus
+} from '@fortawesome/free-solid-svg-icons'
 import type { SortDir } from './useSort'
 
 // Componentes base mínimos siguiendo los tokens de docs/04 §7.
@@ -68,7 +76,8 @@ export function Button(props: {
 }): React.JSX.Element {
   const variant = props.variant ?? 'ghost'
   const styles = {
-    primary: 'bg-accent hover:bg-accent-hover text-on-accent font-semibold border-transparent',
+    primary:
+      'bg-accent hover:bg-accent-hover text-on-accent font-semibold border-transparent shadow-sm hover:shadow-md',
     ghost: 'bg-surface hover:bg-inset text-ink2 hover:text-ink border-line',
     danger: 'bg-surface hover:bg-bad-bg text-bad border-line'
   }[variant]
@@ -78,11 +87,27 @@ export function Button(props: {
       onClick={props.onClick}
       disabled={props.disabled}
       title={props.title}
-      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-[13px] whitespace-nowrap shrink-0 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${styles}`}
+      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-[13px] whitespace-nowrap shrink-0 transition-[color,background-color,border-color,box-shadow,transform] active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${styles}`}
     >
       {props.icon && <Icon icon={props.icon} className="w-3.5 h-3.5" />}
       {props.children}
     </button>
+  )
+}
+
+/** Superficie de tarjeta compartida (redesign/ui-ux-pro-max): reemplaza los
+ * `bg-surface border border-line rounded-*` ad-hoc repetidos en cada vista. */
+export function Card(props: {
+  children: ReactNode
+  className?: string
+  padded?: boolean
+}): React.JSX.Element {
+  return (
+    <div
+      className={`bg-surface border border-line rounded-xl shadow-sm ${props.padded === false ? '' : 'p-4'} ${props.className ?? ''}`}
+    >
+      {props.children}
+    </div>
   )
 }
 
@@ -118,15 +143,32 @@ export function statusTone(code: string): keyof typeof CHIP_STYLES {
   return 'muted'
 }
 
+/** Ícono por estado (redesign/ui-ux-pro-max): los Chips de estado no deben
+ * depender solo del color para distinguirse (accesibilidad para daltonismo). */
+export function statusIcon(code: string): IconDefinition {
+  if (code === 'activo') return faCircleCheck
+  if (code === 'suspendido') return faCircleExclamation
+  if (code === 'fallecido') return faCircleXmark
+  return faCircleMinus
+}
+
 export function Field(props: {
   label: string
+  required?: boolean
   children: ReactNode
   hint?: string
   error?: string
 }): React.JSX.Element {
   return (
     <label className="flex flex-col gap-1 min-w-0">
-      <span className="text-xs font-semibold text-ink2">{props.label}</span>
+      <span className="text-xs font-semibold text-ink2">
+        {props.label}
+        {props.required && (
+          <span className="text-bad ml-0.5" aria-hidden="true">
+            *
+          </span>
+        )}
+      </span>
       {props.children}
       {props.error ? (
         <span className="text-xs text-bad">{props.error}</span>
@@ -170,11 +212,14 @@ export function Modal(props: {
 }): React.JSX.Element {
   return (
     <div
-      className="fixed inset-0 bg-black/40 grid place-items-center p-6 z-50"
+      className="fixed inset-0 bg-black/40 backdrop-blur-[2px] grid place-items-center p-6 z-50"
       onKeyDown={(e) => e.key === 'Escape' && props.onClose()}
       onClick={(e) => e.target === e.currentTarget && props.onClose()}
     >
-      <div className="w-full max-w-md bg-surface border border-line rounded-2xl shadow-xl p-6">
+      <div
+        className="w-full max-w-md bg-surface border border-line rounded-2xl shadow-lg p-6"
+        style={{ animation: 'modal-in 180ms ease-out' }}
+      >
         <h2 className="text-base font-semibold">{props.title}</h2>
         {props.subtitle && <p className="text-xs text-ink3 mt-0.5">{props.subtitle}</p>}
         <div className="mt-4 flex flex-col gap-3">{props.children}</div>

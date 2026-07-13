@@ -4,6 +4,7 @@ import type { Organization, SessionUser } from '@shared/contracts'
 import { api } from '@renderer/api'
 import { Icon } from '@renderer/components/ui'
 import { OrgLogo } from '@renderer/components/OrgLogo'
+import { RecoverAccessScreen } from './RecoverAccessScreen'
 
 const REASON_TEXT: Record<string, string> = {
   credenciales_invalidas: 'El usuario o la contraseña no son correctos.',
@@ -19,6 +20,8 @@ export function LoginScreen(props: {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [recovering, setRecovering] = useState(false)
+  const [recoveredNotice, setRecoveredNotice] = useState<string | null>(null)
 
   async function submit(e: React.FormEvent): Promise<void> {
     e.preventDefault()
@@ -37,6 +40,20 @@ export function LoginScreen(props: {
     } finally {
       setBusy(false)
     }
+  }
+
+  if (recovering) {
+    return (
+      <RecoverAccessScreen
+        onBack={() => setRecovering(false)}
+        onRecovered={(recoveredUsername) => {
+          setRecovering(false)
+          setUsername(recoveredUsername)
+          setPassword('')
+          setRecoveredNotice('Contraseña restablecida. Inicia sesión con tu nueva contraseña.')
+        }}
+      />
+    )
   }
 
   return (
@@ -84,7 +101,21 @@ export function LoginScreen(props: {
           </div>
         </label>
 
-        {!error && props.message && (
+        <button
+          type="button"
+          onClick={() => {
+            setRecoveredNotice(null)
+            setRecovering(true)
+          }}
+          className="self-end -mt-2.5 text-[12.5px] text-accent font-semibold hover:underline"
+        >
+          ¿Olvidaste tu contraseña?
+        </button>
+
+        {!error && recoveredNotice && (
+          <p className="text-[13px] text-good bg-good-bg rounded-lg px-3 py-2">{recoveredNotice}</p>
+        )}
+        {!error && !recoveredNotice && props.message && (
           <p className="text-[13px] text-ink2 bg-inset rounded-lg px-3 py-2">{props.message}</p>
         )}
         {error && (

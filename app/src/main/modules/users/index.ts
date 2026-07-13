@@ -20,4 +20,13 @@ export function register(): void {
   handle(contracts.users.update, ({ id, fullName, username }) => service.updateUser(id, { fullName, username }, actor()))
   handle(contracts.users.resetPassword, ({ id, newPassword }) => service.adminResetPassword(id, newPassword, actor()))
   handle(contracts.users.setActive, ({ id, isActive }) => service.setUserActive(id, isActive, actor()))
+
+  handle(contracts.users.hasRecoveryCode, () => service.hasRecoveryCode())
+  handle(contracts.users.generateRecoveryCode, () => {
+    if (service.me()?.role !== 'admin') throw new Error('Solo un administrador puede generar el código de recuperación.')
+    return service.generateRecoveryCode(actor())
+  })
+  handle(contracts.users.recoverWithCode, ({ code, username, newPassword }) =>
+    service.recoverPasswordWithCode(code, username, newPassword)
+  )
 }
