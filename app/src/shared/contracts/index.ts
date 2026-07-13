@@ -9,6 +9,7 @@ import { backupsContracts } from './backups'
 import { eventsContracts } from './events'
 import { assembliesContracts } from './assemblies'
 import { usersContracts } from './users'
+import { trashContracts } from './trash'
 import type { Contract } from './core'
 
 export const contracts = {
@@ -22,7 +23,8 @@ export const contracts = {
   backups: backupsContracts,
   events: eventsContracts,
   assemblies: assembliesContracts,
-  users: usersContracts
+  users: usersContracts,
+  trash: trashContracts
 }
 
 /** Lista plana de canales permitidos — el preload solo deja pasar estos. */
@@ -48,3 +50,4 @@ export * from './backups'
 export * from './events'
 export * from './assemblies'
 export * from './users'
+export * from './trash'

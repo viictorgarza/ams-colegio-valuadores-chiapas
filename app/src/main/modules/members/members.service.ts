@@ -282,3 +282,25 @@ function snapshot(d: MemberDetail): Record<string, unknown> {
   const { history: _history, ...rest } = d
   return rest
 }
+
+export function listDeletedMembers(): Array<{ id: string; label: string; detail: string | null; deletedAt: string }> {
+  return getDb()
+    .select()
+    .from(s.members)
+    .where(isNotNull(s.members.deletedAt))
+    .all()
+    .map((m) => ({
+      id: m.id,
+      label: m.fullName,
+      detail: m.memberNumber,
+      deletedAt: m.deletedAt!
+    }))
+}
+
+export function restoreMember(id: string, actorId: string | null): void {
+  const db = getDb()
+  const row = db.select().from(s.members).where(and(eq(s.members.id, id), isNotNull(s.members.deletedAt))).get()
+  if (!row) throw new MemberError('El miembro no está en la papelera')
+  db.update(s.members).set({ deletedAt: null, updatedAt: new Date().toISOString() }).where(eq(s.members.id, id)).run()
+  bus.emit('member.restored', { actorId, memberId: id })
+}

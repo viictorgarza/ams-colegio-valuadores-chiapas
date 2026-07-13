@@ -19,6 +19,12 @@ export function register(): void {
     return { ok: true as const }
   })
 
+  handle(contracts.system.getAutoLockMinutes, () => getSetting<number>('auto_lock_minutes', 10))
+  handle(contracts.system.setAutoLockMinutes, ({ minutes }) => {
+    setSetting('auto_lock_minutes', minutes)
+    return { ok: true as const }
+  })
+
   handle(contracts.system.info, () => {
     const db = getDb()
     const rows = (table: SQLiteTable): number =>

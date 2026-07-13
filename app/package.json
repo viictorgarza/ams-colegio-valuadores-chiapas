@@ -55,7 +55,7 @@
     "vite": "^7.3.6"
   },
   "build": {
-    "appId": "mx.org.covach.ams",
+    "appId": "mx.org.cevpchiapas.ams",
     "productName": "AMS",
     "directories": {
       "buildResources": "build",

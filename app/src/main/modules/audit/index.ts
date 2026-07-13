@@ -369,6 +369,46 @@ export function register(): void {
   bus.on('first_run.completed', (e) => {
     write({ userId: e.actorId, action: 'sistema.primera_ejecucion_completada', device })
   })
+
+  bus.on('member.restored', (e) => {
+    write({ userId: e.actorId, action: 'miembro.restaurado', entityType: 'member', entityId: e.memberId, device })
+  })
+
+  bus.on('payment.restored', (e) => {
+    write({ userId: e.actorId, action: 'pago.restaurado', entityType: 'payment', entityId: e.paymentId, device })
+  })
+
+  bus.on('calendar_event.restored', (e) => {
+    write({
+      userId: e.actorId,
+      action: 'evento.restaurado',
+      entityType: 'event',
+      entityId: e.eventId,
+      afterJson: JSON.stringify({ titulo: e.title }),
+      device
+    })
+  })
+
+  bus.on('assembly.restored', (e) => {
+    write({
+      userId: e.actorId,
+      action: 'asamblea.restaurada',
+      entityType: 'assembly',
+      entityId: e.assemblyId,
+      afterJson: JSON.stringify({ fecha: e.date }),
+      device
+    })
+  })
+
+  bus.on('document.restored', (e) => {
+    write({
+      userId: e.actorId,
+      action: 'expediente.restaurado',
+      entityType: 'member_document',
+      entityId: e.memberDocumentId,
+      device
+    })
+  })
 }
 
 function write(entry: {

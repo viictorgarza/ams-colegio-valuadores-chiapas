@@ -3,7 +3,7 @@ import { faLock, faRightToBracket, faUser } from '@fortawesome/free-solid-svg-ic
 import type { Organization, SessionUser } from '@shared/contracts'
 import { api } from '@renderer/api'
 import { Icon } from '@renderer/components/ui'
-import logoColegio from '@renderer/assets/logo-colegio.svg'
+import { OrgLogo } from '@renderer/components/OrgLogo'
 
 const REASON_TEXT: Record<string, string> = {
   credenciales_invalidas: 'El usuario o la contraseña no son correctos.',
@@ -13,6 +13,7 @@ const REASON_TEXT: Record<string, string> = {
 export function LoginScreen(props: {
   org: Organization | null
   onLogin: (user: SessionUser) => void
+  message?: string | null
 }): React.JSX.Element {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -46,7 +47,7 @@ export function LoginScreen(props: {
       >
         <div className="flex flex-col items-center gap-3 text-center">
           <div className="w-16 h-16 rounded-2xl bg-white grid place-items-center p-2.5 shadow-sm">
-            <img src={logoColegio} alt="" className="w-full h-full object-contain" />
+            <OrgLogo org={props.org} className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="text-[17px] font-semibold leading-snug text-balance">
@@ -83,6 +84,9 @@ export function LoginScreen(props: {
           </div>
         </label>
 
+        {!error && props.message && (
+          <p className="text-[13px] text-ink2 bg-inset rounded-lg px-3 py-2">{props.message}</p>
+        )}
         {error && (
           <p className="text-[13px] text-bad bg-bad-bg rounded-lg px-3 py-2" role="alert">
             {error}

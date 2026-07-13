@@ -165,7 +165,9 @@ export function CalendarView(): React.JSX.Element {
         />
       )}
 
-      {detailEvent && <EventDetailModal event={detailEvent} onClose={() => setDetailEvent(null)} />}
+      {detailEvent && (
+        <EventDetailModal event={detailEvent} onClose={() => setDetailEvent(null)} onChanged={reload} />
+      )}
     </div>
   )
 }

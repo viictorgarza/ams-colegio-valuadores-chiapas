@@ -13,6 +13,7 @@ import { GlobalSearch } from './GlobalSearch'
 import { NewPaymentQuickModal } from './NewPaymentQuickModal'
 import { NewMenuButton, NewCommandPalette, type NewMenuAction } from './NewMenu'
 import { Icon } from '@renderer/components/ui'
+import { OrgLogo } from '@renderer/components/OrgLogo'
 import { ThemeToggle } from './ThemeToggle'
 import {
   faHouse,
@@ -24,7 +25,6 @@ import {
   faClipboardCheck
 } from '@fortawesome/free-solid-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import logoColegio from '@renderer/assets/logo-colegio.svg'
 
 type View =
   | { name: 'inicio' }
@@ -97,7 +97,7 @@ export function Shell(props: {
       <aside className="w-[212px] shrink-0 bg-sidebar border-r border-line flex flex-col p-3 h-full min-h-0">
         <div className="flex items-center gap-2.5 px-2 pb-4 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-white grid place-items-center shrink-0 p-1 shadow-sm">
-            <img src={logoColegio} alt="" className="w-full h-full object-contain" />
+            <OrgLogo org={props.org} className="w-full h-full object-contain" />
           </div>
           <div className="text-[11.5px] font-semibold leading-tight">
             {props.org?.name ?? 'AMS'}

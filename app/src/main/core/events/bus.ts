@@ -96,6 +96,11 @@ export interface DomainEvents {
   'user.active_changed': { actorId: string | null; userId: string; username: string; isActive: boolean }
   'user.password_changed': { actorId: string | null; userId: string; username: string }
   'first_run.completed': { actorId: string | null }
+  'member.restored': { actorId: string | null; memberId: string }
+  'payment.restored': { actorId: string | null; paymentId: string; memberId: string }
+  'calendar_event.restored': { actorId: string | null; eventId: string; title: string }
+  'assembly.restored': { actorId: string | null; assemblyId: string; date: string }
+  'document.restored': { actorId: string | null; memberId: string; memberDocumentId: string }
 }
 
 class TypedBus {

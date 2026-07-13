@@ -15,5 +15,11 @@ export const systemContracts = {
     })
   ),
   firstRunPending: contract('system:first-run-pending', z.void(), z.boolean()),
-  completeFirstRun: contract('system:complete-first-run', z.void(), z.object({ ok: z.literal(true) }))
+  completeFirstRun: contract('system:complete-first-run', z.void(), z.object({ ok: z.literal(true) })),
+  getAutoLockMinutes: contract('system:get-auto-lock-minutes', z.void(), z.number()),
+  setAutoLockMinutes: contract(
+    'system:set-auto-lock-minutes',
+    z.object({ minutes: z.number().int().min(0).max(240) }),
+    z.object({ ok: z.literal(true) })
+  )
 }

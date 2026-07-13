@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull } from 'drizzle-orm'
+import { and, asc, desc, eq, isNotNull, isNull } from 'drizzle-orm'
 import { v7 as uuidv7 } from 'uuid'
 import { getDb } from '../../core/db'
 import * as s from '../../core/db/schema'
@@ -64,6 +64,31 @@ export function removeAssembly(id: string, actorId: string | null): void {
     .where(eq(s.assemblies.id, id))
     .run()
   bus.emit('assembly.deleted', { actorId, assemblyId: id, date: row.date })
+}
+
+export function listDeletedAssemblies(): Array<{
+  id: string
+  label: string
+  detail: string | null
+  deletedAt: string
+}> {
+  return getDb()
+    .select()
+    .from(s.assemblies)
+    .where(isNotNull(s.assemblies.deletedAt))
+    .all()
+    .map((a) => ({ id: a.id, label: a.title ?? `Asamblea ${a.date}`, detail: a.date, deletedAt: a.deletedAt! }))
+}
+
+export function restoreAssembly(id: string, actorId: string | null): void {
+  const db = getDb()
+  const row = db.select().from(s.assemblies).where(and(eq(s.assemblies.id, id), isNotNull(s.assemblies.deletedAt))).get()
+  if (!row) throw new AssemblyError('La asamblea no está en la papelera')
+  db.update(s.assemblies)
+    .set({ deletedAt: null, updatedAt: new Date().toISOString() })
+    .where(eq(s.assemblies.id, id))
+    .run()
+  bus.emit('assembly.restored', { actorId, assemblyId: id, date: row.date })
 }
 
 function memberDisplay(m: {

@@ -13,7 +13,8 @@ export const organizationSchema = z.object({
   country: z.string().nullable(),
   phone: z.string().nullable(),
   email: z.string().nullable(),
-  website: z.string().nullable()
+  website: z.string().nullable(),
+  hasLogo: z.boolean()
 })
 
 export type Organization = z.output<typeof organizationSchema>
@@ -35,7 +36,13 @@ export const updateOrganizationSchema = z.object({
 })
 export type UpdateOrganizationInput = z.output<typeof updateOrganizationSchema>
 
+export const logoDataSchema = z.object({ mimeType: z.string(), dataBase64: z.string() })
+export type LogoData = z.output<typeof logoDataSchema>
+
 export const organizationContracts = {
   get: contract('organization:get', z.void(), organizationSchema.nullable()),
-  update: contract('organization:update', updateOrganizationSchema, organizationSchema)
+  update: contract('organization:update', updateOrganizationSchema, organizationSchema),
+  uploadLogo: contract('organization:upload-logo', z.void(), organizationSchema.nullable()),
+  getLogo: contract('organization:get-logo', z.void(), logoDataSchema.nullable()),
+  removeLogo: contract('organization:remove-logo', z.void(), organizationSchema)
 }

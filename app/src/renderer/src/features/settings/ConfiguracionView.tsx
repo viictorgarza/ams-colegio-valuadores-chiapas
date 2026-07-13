@@ -2,17 +2,23 @@ import { useState } from 'react'
 import { DocumentTypesView } from './DocumentTypesView'
 import { BackupsView } from './BackupsView'
 import { OcrSettingsView } from './OcrSettingsView'
+import { TrashView } from './TrashView'
+import { OrganizationSettingsView } from './OrganizationSettingsView'
+import { SecuritySettingsView } from './SecuritySettingsView'
 
-type Tab = 'tipos' | 'respaldos' | 'ocr'
+type Tab = 'organizacion' | 'tipos' | 'respaldos' | 'ocr' | 'papelera' | 'seguridad'
 
 const TABS: Array<{ key: Tab; label: string }> = [
+  { key: 'organizacion', label: 'Organización' },
   { key: 'tipos', label: 'Tipos de documento' },
   { key: 'respaldos', label: 'Respaldos' },
-  { key: 'ocr', label: 'OCR' }
+  { key: 'ocr', label: 'OCR' },
+  { key: 'papelera', label: 'Papelera' },
+  { key: 'seguridad', label: 'Seguridad' }
 ]
 
 export function ConfiguracionView(): React.JSX.Element {
-  const [tab, setTab] = useState<Tab>('tipos')
+  const [tab, setTab] = useState<Tab>('organizacion')
 
   return (
     <div>
@@ -33,9 +39,12 @@ export function ConfiguracionView(): React.JSX.Element {
           ))}
         </div>
       </div>
+      {tab === 'organizacion' && <OrganizationSettingsView />}
       {tab === 'tipos' && <DocumentTypesView />}
       {tab === 'respaldos' && <BackupsView />}
       {tab === 'ocr' && <OcrSettingsView />}
+      {tab === 'papelera' && <TrashView />}
+      {tab === 'seguridad' && <SecuritySettingsView />}
     </div>
   )
 }

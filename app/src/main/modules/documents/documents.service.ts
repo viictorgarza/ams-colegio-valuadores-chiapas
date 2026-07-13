@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull, lte } from 'drizzle-orm'
+import { and, asc, desc, eq, isNotNull, isNull, lte } from 'drizzle-orm'
 import { v7 as uuidv7 } from 'uuid'
 import { app, BrowserWindow, dialog } from 'electron'
 import { copyFileSync, mkdirSync } from 'node:fs'
@@ -357,6 +357,45 @@ export function removeMemberDocument(memberDocumentId: string, actorId: string |
       .name
   })
   return entryFor(row.memberId, row.documentTypeId)
+}
+
+export function listDeletedMemberDocuments(): Array<{
+  id: string
+  label: string
+  detail: string | null
+  deletedAt: string
+}> {
+  const db = getDb()
+  const rows = db.select().from(s.memberDocuments).where(isNotNull(s.memberDocuments.deletedAt)).all()
+  return rows.map((d) => {
+    const member = db.select({ fullName: s.members.fullName }).from(s.members).where(eq(s.members.id, d.memberId)).get()
+    const docType = db
+      .select({ name: s.documentTypes.name })
+      .from(s.documentTypes)
+      .where(eq(s.documentTypes.id, d.documentTypeId))
+      .get()
+    return {
+      id: d.id,
+      label: `${docType?.name ?? 'Documento'} — ${member?.fullName ?? 'Miembro'}`,
+      detail: null,
+      deletedAt: d.deletedAt!
+    }
+  })
+}
+
+export function restoreMemberDocument(memberDocumentId: string, actorId: string | null): void {
+  const db = getDb()
+  const row = db
+    .select()
+    .from(s.memberDocuments)
+    .where(and(eq(s.memberDocuments.id, memberDocumentId), isNotNull(s.memberDocuments.deletedAt)))
+    .get()
+  if (!row) throw new DocumentError('El documento no está en la papelera')
+  db.update(s.memberDocuments)
+    .set({ deletedAt: null, updatedAt: new Date().toISOString() })
+    .where(eq(s.memberDocuments.id, memberDocumentId))
+    .run()
+  bus.emit('document.restored', { actorId, memberId: row.memberId, memberDocumentId })
 }
 
 function versionFile(versionId: string): { path: string; originalName: string; mimeType: string } {

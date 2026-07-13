@@ -22,12 +22,17 @@ export const api = {
   },
   organization: {
     get: caller(contracts.organization.get),
-    update: caller(contracts.organization.update)
+    update: caller(contracts.organization.update),
+    uploadLogo: caller(contracts.organization.uploadLogo),
+    getLogo: caller(contracts.organization.getLogo),
+    removeLogo: caller(contracts.organization.removeLogo)
   },
   system: {
     info: caller(contracts.system.info),
     firstRunPending: caller(contracts.system.firstRunPending),
-    completeFirstRun: caller(contracts.system.completeFirstRun)
+    completeFirstRun: caller(contracts.system.completeFirstRun),
+    getAutoLockMinutes: caller(contracts.system.getAutoLockMinutes),
+    setAutoLockMinutes: caller(contracts.system.setAutoLockMinutes)
   },
   users: {
     list: caller(contracts.users.list),
@@ -108,5 +113,9 @@ export const api = {
     setAttendance: caller(contracts.assemblies.setAttendance),
     printBlankSheet: caller(contracts.assemblies.printBlankSheet),
     printAttendanceSheet: caller(contracts.assemblies.printAttendanceSheet)
+  },
+  trash: {
+    list: caller(contracts.trash.list),
+    restore: caller(contracts.trash.restore)
   }
 }

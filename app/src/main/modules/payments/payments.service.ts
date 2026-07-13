@@ -1,4 +1,4 @@
-import { and, eq, isNull } from 'drizzle-orm'
+import { and, eq, isNotNull, isNull } from 'drizzle-orm'
 import { v7 as uuidv7 } from 'uuid'
 import { getDb } from '../../core/db'
 import * as s from '../../core/db/schema'
@@ -148,6 +148,28 @@ export function removePayment(id: string, actorId: string | null): void {
     memberId: row.memberId,
     before: toPayment(row) as unknown as Record<string, unknown>
   })
+}
+
+export function listDeletedPayments(): Array<{ id: string; label: string; detail: string | null; deletedAt: string }> {
+  const db = getDb()
+  const rows = db.select().from(s.payments).where(isNotNull(s.payments.deletedAt)).all()
+  return rows.map((p) => {
+    const member = db.select({ fullName: s.members.fullName }).from(s.members).where(eq(s.members.id, p.memberId)).get()
+    return {
+      id: p.id,
+      label: `${member?.fullName ?? 'Miembro'} — ${(p.amountCents / 100).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })} (${p.year})`,
+      detail: p.paidAt,
+      deletedAt: p.deletedAt!
+    }
+  })
+}
+
+export function restorePayment(id: string, actorId: string | null): void {
+  const db = getDb()
+  const row = db.select().from(s.payments).where(and(eq(s.payments.id, id), isNotNull(s.payments.deletedAt))).get()
+  if (!row) throw new PaymentError('El pago no está en la papelera')
+  db.update(s.payments).set({ deletedAt: null, updatedAt: new Date().toISOString() }).where(eq(s.payments.id, id)).run()
+  bus.emit('payment.restored', { actorId, paymentId: id, memberId: row.memberId })
 }
 
 /** Anualidades por año (docs/03 §4.4): estado calculado en memoria, nunca almacenado. */

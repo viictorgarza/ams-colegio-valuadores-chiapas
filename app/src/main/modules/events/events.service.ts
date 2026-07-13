@@ -1,4 +1,4 @@
-import { and, asc, eq, isNull } from 'drizzle-orm'
+import { and, asc, eq, isNotNull, isNull } from 'drizzle-orm'
 import { v7 as uuidv7 } from 'uuid'
 import { getDb } from '../../core/db'
 import * as s from '../../core/db/schema'
@@ -79,4 +79,21 @@ export function removeEvent(id: string, actorId: string | null): void {
     .where(eq(s.events.id, id))
     .run()
   bus.emit('calendar_event.deleted', { actorId, eventId: id, title: row.title })
+}
+
+export function listDeletedEvents(): Array<{ id: string; label: string; detail: string | null; deletedAt: string }> {
+  return getDb()
+    .select()
+    .from(s.events)
+    .where(isNotNull(s.events.deletedAt))
+    .all()
+    .map((e) => ({ id: e.id, label: e.title, detail: e.startsAt.slice(0, 10), deletedAt: e.deletedAt! }))
+}
+
+export function restoreEvent(id: string, actorId: string | null): void {
+  const db = getDb()
+  const row = db.select().from(s.events).where(and(eq(s.events.id, id), isNotNull(s.events.deletedAt))).get()
+  if (!row) throw new EventError('El evento no está en la papelera')
+  db.update(s.events).set({ deletedAt: null, updatedAt: new Date().toISOString() }).where(eq(s.events.id, id)).run()
+  bus.emit('calendar_event.restored', { actorId, eventId: id, title: row.title })
 }
