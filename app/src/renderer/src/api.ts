@@ -39,7 +39,10 @@ export const api = {
     create: caller(contracts.users.create),
     update: caller(contracts.users.update),
     resetPassword: caller(contracts.users.resetPassword),
-    setActive: caller(contracts.users.setActive)
+    setActive: caller(contracts.users.setActive),
+    hasRecoveryCode: caller(contracts.users.hasRecoveryCode),
+    generateRecoveryCode: caller(contracts.users.generateRecoveryCode),
+    recoverWithCode: caller(contracts.users.recoverWithCode)
   },
   members: {
     list: caller(contracts.members.list),

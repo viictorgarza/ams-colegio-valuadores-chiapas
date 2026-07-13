@@ -1,6 +1,6 @@
 import { faIdBadge } from '@fortawesome/free-solid-svg-icons'
 import type { MemberListItem } from '@shared/contracts'
-import { Chip, SortableTh, statusTone } from '@renderer/components/ui'
+import { Chip, SortableTh, statusIcon, statusTone } from '@renderer/components/ui'
 import { useSort } from '@renderer/components/useSort'
 import { useColumnOrder } from '@renderer/components/useColumnOrder'
 
@@ -28,7 +28,7 @@ function cell(key: ColKey, m: MemberListItem): React.ReactNode {
   if (key === 'apellidos') return apellidos(m) ?? '—'
   if (key === 'phone') return <span className="tabular-nums text-ink2">{m.phone ?? '—'}</span>
   return (
-    <Chip tone={statusTone(m.statusCode)} dot>
+    <Chip tone={statusTone(m.statusCode)} icon={statusIcon(m.statusCode)}>
       {m.statusName}
     </Chip>
   )
@@ -41,7 +41,7 @@ function cell(key: ColKey, m: MemberListItem): React.ReactNode {
 export function MembersTable(props: {
   items: MemberListItem[]
   onOpen: (id: string) => void
-  emptyMessage?: string
+  emptyMessage?: React.ReactNode
   highlightedId?: string
   onHover?: (id: string) => void
 }): React.JSX.Element {
@@ -56,7 +56,7 @@ export function MembersTable(props: {
   return (
     <div className="border border-line rounded-xl bg-surface overflow-x-auto">
       <table className="w-full text-[13.5px] min-w-[760px]">
-        <thead>
+        <thead className="sticky top-0 z-[1] bg-surface">
           <tr className="text-left text-[11px] uppercase tracking-wide text-ink3">
             {order.map((key) => (
               <SortableTh

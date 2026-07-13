@@ -10,7 +10,7 @@ import {
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import type { MemberAnnuity } from '@shared/contracts'
 import { api } from '@renderer/api'
-import { Button, Chip, Field, Icon, SortableTh, TextInput } from '@renderer/components/ui'
+import { Button, Chip, Field, SortableTh, TextInput } from '@renderer/components/ui'
 import { useSort } from '@renderer/components/useSort'
 import { useColumnOrder } from '@renderer/components/useColumnOrder'
 import { NewPaymentQuickModal } from '@renderer/app/NewPaymentQuickModal'
@@ -121,22 +121,27 @@ export function AnnuitiesView(props: {
             {covered} de {items.length} cubiertas
           </p>
         </div>
-        <div className="flex gap-1.5">
-          {[currentYear - 1, currentYear].map((y) => (
-            <button
-              key={y}
-              onClick={() => setYear(y)}
-              className={
-                y === year
-                  ? 'px-3.5 py-1.5 rounded-lg bg-accent text-on-accent text-[13px] font-semibold'
-                  : 'px-3.5 py-1.5 rounded-lg border border-line text-ink2 text-[13px] hover:bg-inset'
-              }
-            >
-              {y}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-end gap-2">
+        <div className="flex items-end gap-4 flex-wrap">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-transparent select-none" aria-hidden="true">
+              Año
+            </span>
+            <div className="flex gap-1.5">
+              {[currentYear - 1, currentYear].map((y) => (
+                <button
+                  key={y}
+                  onClick={() => setYear(y)}
+                  className={
+                    y === year
+                      ? 'px-3.5 py-1.5 rounded-lg bg-accent text-on-accent text-[13px] font-semibold'
+                      : 'px-3.5 py-1.5 rounded-lg border border-line text-ink2 text-[13px] hover:bg-inset'
+                  }
+                >
+                  {y}
+                </button>
+              ))}
+            </div>
+          </div>
           <Field label={`Cuota general ${year}`}>
             <TextInput
               value={fee}
@@ -147,15 +152,9 @@ export function AnnuitiesView(props: {
               placeholder="1500.00"
             />
           </Field>
-          <button
-            onClick={() => void saveFee()}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line text-[13px] text-ink2 hover:bg-inset mb-[1px]"
-          >
-            <Icon icon={faFloppyDisk} className="w-3.5 h-3.5" />
+          <Button icon={faFloppyDisk} onClick={() => void saveFee()}>
             Guardar
-          </button>
-        </div>
-        <div className="self-end mb-[1px]">
+          </Button>
           <Button variant="primary" icon={faMoneyCheckDollar} onClick={() => setShowNewPayment(true)}>
             Nuevo Pago
           </Button>

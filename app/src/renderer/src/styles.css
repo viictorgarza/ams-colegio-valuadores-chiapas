@@ -1,14 +1,17 @@
 @import 'tailwindcss';
 
 /*
- * Tokens del sistema visual (docs/04 §7): azul institucional #163EAB,
- * neutros fríos con sesgo azul, Segoe UI. Modo claro por defecto;
- * el modo oscuro llega después con esta misma estructura.
+ * Rediseño azul institucional (2026-07-13, redesign/ui-ux-pro-max): acento
+ * azul #163EAB, el mismo tono del logo del Colegio (#102970 en el SVG),
+ * confirmado por Victor sobre la variante teal que se probó primero.
+ * Sidebar oscuro dedicado con sus propios tokens de texto/estado para
+ * mantener contraste sin heredar los tokens de contenido (ink/ink2/ink3
+ * están calibrados para superficies claras). Segoe UI se conserva por ser
+ * nativo de Windows. Modo oscuro con la misma estructura de tokens.
  */
 @theme {
   --color-bg: #f3f5f9;
   --color-surface: #ffffff;
-  --color-sidebar: #eef1f6;
   --color-inset: #f6f8fb;
   --color-ink: #1a2130;
   --color-ink2: #566175;
@@ -25,18 +28,27 @@
   --color-bad-bg: #fbeaea;
   --color-on-accent: #ffffff; /* texto sobre botones sólidos de acento */
 
+  /* Sidebar oscuro dedicado (independiente de bg/surface del contenido),
+   * en el mismo azul marino del logo (#102970). */
+  --color-sidebar: #102970;
+  --color-sidebar-ink: #eaf0fb;
+  --color-sidebar-ink2: #9fb3d9;
+  --color-sidebar-line: rgba(255, 255, 255, 0.08);
+  --color-sidebar-active-bg: rgba(126, 155, 232, 0.16);
+  --color-sidebar-active-ink: #7e9be8;
+
   --font-sans: -apple-system, 'Segoe UI', 'SF Pro Text', system-ui, sans-serif;
 }
 
 /*
- * Modo oscuro (docs/04 §7): mismos tokens, valores distintos. Se activa con
+ * Modo oscuro: mismos tokens, valores distintos. Se activa con
  * data-theme="dark" en <html>, controlado por ThemeToggle (persistido en
- * localStorage). El acento en oscuro es #7E9BE8, ya documentado desde Fase 4.
+ * localStorage). El sidebar ya era oscuro en claro, así que en dark queda
+ * ligeramente más oscuro que el contenido para conservar la jerarquía.
  */
 :root[data-theme='dark'] {
   --color-bg: #12151c;
   --color-surface: #1a1e28;
-  --color-sidebar: #161a22;
   --color-inset: #20242f;
   --color-ink: #e7ebf5;
   --color-ink2: #a8b0c2;
@@ -52,6 +64,13 @@
   --color-bad: #ea6b6b;
   --color-bad-bg: #3a1a1a;
   --color-on-accent: #12151c;
+
+  --color-sidebar: #0d1424;
+  --color-sidebar-ink: #e7ebf5;
+  --color-sidebar-ink2: #a8b0c2;
+  --color-sidebar-line: rgba(255, 255, 255, 0.06);
+  --color-sidebar-active-bg: rgba(126, 155, 232, 0.16);
+  --color-sidebar-active-ink: #7e9be8;
 }
 
 body {
@@ -72,4 +91,16 @@ body {
     background-color 220ms ease,
     border-color 220ms ease,
     color 220ms ease;
+}
+
+/* Entrada de modales (Modal en components/ui.tsx): fade + scale sutil. */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }

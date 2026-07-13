@@ -96,6 +96,8 @@ export interface DomainEvents {
   'user.password_changed': { actorId: string | null; userId: string; username: string }
   'user.updated': { actorId: string | null; userId: string; fullName: string; username: string }
   'user.password_reset': { actorId: string | null; userId: string; username: string }
+  'security.recovery_code_generated': { actorId: string | null }
+  'user.password_recovered': { userId: string; username: string }
   'first_run.completed': { actorId: string | null }
   'member.restored': { actorId: string | null; memberId: string }
   'payment.restored': { actorId: string | null; paymentId: string; memberId: string }

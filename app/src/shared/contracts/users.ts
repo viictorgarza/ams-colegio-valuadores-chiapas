@@ -52,6 +52,20 @@ export const resetPasswordSchema = z.object({
   newPassword: z.string().min(8, 'Mínimo 8 caracteres')
 })
 
+export const recoverWithCodeSchema = z.object({
+  code: z.string().trim().min(1),
+  username: z.string().trim().min(1),
+  newPassword: z.string().min(8, 'Mínimo 8 caracteres')
+})
+
+const recoverWithCodeResultSchema = z.union([
+  z.object({ ok: z.literal(true) }),
+  z.object({
+    ok: z.literal(false),
+    reason: z.enum(['sin_codigo', 'codigo_incorrecto', 'usuario_no_encontrado', 'bloqueado'])
+  })
+])
+
 export const usersContracts = {
   list: contract('users:list', z.void(), z.array(userSchema)),
   create: contract('users:create', createUserSchema, createUserResultSchema),
@@ -64,5 +78,13 @@ export const usersContracts = {
       z.object({ ok: z.literal(true) }),
       z.object({ ok: z.literal(false), reason: z.enum(['ultimo_admin_activo']) })
     ])
-  )
+  ),
+  // Recuperación local de acceso (redesign/ui-ux-pro-max, 2026-07-13): un código
+  // único por instalación, generado por un admin ya logueado desde Configuración →
+  // Seguridad, para el caso de "el único admin olvidó su contraseña". Deliberadamente
+  // NO es una contraseña maestra fija — cada instalación tiene su propio código, que
+  // solo se muestra una vez al generarse y se guarda hasheado (nunca en texto plano).
+  hasRecoveryCode: contract('users:has-recovery-code', z.void(), z.boolean()),
+  generateRecoveryCode: contract('users:generate-recovery-code', z.void(), z.object({ code: z.string() })),
+  recoverWithCode: contract('users:recover-with-code', recoverWithCodeSchema, recoverWithCodeResultSchema)
 }
